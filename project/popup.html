@@ -12,13 +12,20 @@
             <label class="tab_item" for="rd_restore">復元</label>
             <input id="rd_edit" type="radio" name="tab_item">
             <label class="tab_item" for="rd_edit">編集</label>
+
             <div class="tab_content" id="save_content">
-                
+                保存するタブ
+                <select id="sb_save_tab_list" multiple></select>
+                保存先
+                <select id="sb_save_target_tabmark_list" size="10"></select>
+                <button type="button" id="btn_save_tabs">保存</button>
             </div>
+
             <div class="tab_content" id="restore_content">
-                <select id="restore_sb_tabmark_list" multiple></select>
-                <button type="button" id="restore_btn_open_tabs">復元</button>
+                <select id="sb_restore_tabmark_list" multiple></select>
+                <button type="button" id="btn_restore_open_tabs">復元</button>
             </div>
+
             <div class="tab_content" id="edit_content">
                 
             </div>
