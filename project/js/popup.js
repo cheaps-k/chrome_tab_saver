@@ -1,24 +1,50 @@
 var tabmark_list;
+var page_activate_event;
 
 window.onload = function() {
     addEventListener("unload", function (event) {
         save_tabmark_list(tabmark_list);
     }, true);
     
-    document.getElementById('btn_restore_open_tabs').addEventListener('click', open_tab_list);
+    var pages = document.getElementsByName('tab_item');
+    for( page_index = 0; page_index < pages.length; page_index++ ) {
+        pages[page_index].addEventListener('change', change_page);
+    }
+    page_activate_event = [event_activate_save, event_activate_restore, event_activate_edit];
+    
     document.getElementById('btn_save_tabs').addEventListener('click', add_tab_list);
+    document.getElementById('btn_restore_open_tabs').addEventListener('click', open_tab_list);
     document.getElementById('sb_edit_tabmark_list').addEventListener('change', select_edit_tabmark);
     document.getElementById('btn_edit_rename_tabmark').addEventListener('click', rename_tabmark);
     document.getElementById('btn_edit_delete_tabmark').addEventListener('click', delete_tabmark);
     document.getElementById('btn_edit_delete_tab').addEventListener('click', delet_tab);
 
     tabmark_list = get_tabmark_list();
+    event_activate_save();  // Default page is save.
+};
 
+/* ===== Page functions ===== */
+function change_page() {
+    var pages = document.getElementsByName('tab_item');
+    for( page_index = 0; page_index < pages.length; page_index++ ) {
+        if( pages[page_index].checked ) {
+            page_activate_event[page_index]();
+        }
+    }
+}
+
+function event_activate_save() {
     update_save_tab_list();
     update_save_target_tabmark_list();
+}
+
+function event_activate_restore() {
     update_restore_tabmark_list();
+}
+
+function event_activate_edit() {
     update_edit_tabmark_list();
-};
+}
 
 /* ===== Save functions ===== */
 function add_tab_list() {
