@@ -7,12 +7,17 @@ window.onload = function() {
     
     document.getElementById('btn_restore_open_tabs').addEventListener('click', open_tab_list);
     document.getElementById('btn_save_tabs').addEventListener('click', add_tab_list);
+    document.getElementById('sb_edit_tabmark_list').addEventListener('change', select_edit_tabmark);
+    document.getElementById('btn_edit_rename_tabmark').addEventListener('click', rename_tabmark);
+    document.getElementById('btn_edit_delete_tabmark').addEventListener('click', delete_tabmark);
+    document.getElementById('btn_edit_delete_tab').addEventListener('click', delet_tab);
 
     tabmark_list = get_tabmark_list();
 
     update_save_tab_list();
     update_save_target_tabmark_list();
     update_restore_tabmark_list();
+    update_edit_tabmark_list();
 };
 
 /* ===== Save functions ===== */
@@ -88,9 +93,64 @@ function update_restore_tabmark_list() {
     set_tabmark_list_for_select_box("sb_restore_tabmark_list");
 }
 
+/* ===== Edit functions ===== */
+function select_edit_tabmark() {
+    var tabmark_list = document.getElementById("sb_edit_tabmark_list");
+    var select_tabmark_name = tabmark_list.options[tabmark_list.selectedIndex].text;
+    var select_tabmark_id = tabmark_list.options[tabmark_list.selectedIndex].value;
+    
+    document.getElementById("it_edit_new_name").value = select_tabmark_name;
+    
+    update_edit_tablist();
+}
+
+function rename_tabmark() {
+    var new_name = document.getElementById("it_edit_new_name").value;
+    var rename_tabmark_id = document.getElementById("sb_edit_tabmark_list").value;
+    tabmark_list[rename_tabmark_id][name] = new_name;
+    update_edit_tabmark_list();
+    document.getElementById("it_edit_new_name").value = "";
+}
+
+function delete_tabmark() {
+    var delete_tabmark_id = document.getElementById("sb_edit_tabmark_list").value;
+    delete tabmark_list[delete_tabmark_id];
+    update_edit_tabmark_list();
+    document.getElementById("it_edit_new_name").value = "";
+    clear_select_box(document.getElementById("sb_edit_tab_list"));
+}
+
+function delet_tab() {
+    var delete_tabmark_id = document.getElementById("sb_edit_tabmark_list").value;
+    var delete_tab_id = document.getElementById("sb_edit_tab_list").value;
+    delete tabmark_list[delete_tabmark_id].data.splice(delete_tab_id, 1);
+    update_edit_tablist();
+}
+
+function update_edit_tabmark_list() {
+    set_tabmark_list_for_select_box("sb_edit_tabmark_list");
+}
+
+function update_edit_tablist() {
+    var select_tabmark_id = document.getElementById("sb_edit_tabmark_list").value;
+    var select = document.getElementById("sb_edit_tab_list");
+    
+    clear_select_box( select );
+    
+    var tab_data = tabmark_list[select_tabmark_id].data;
+    for( var tab_index = 0; tab_index < tab_data.length; tab_index++ ) {
+        var option = document.createElement("option");
+        option.text = tab_data[tab_index].name;
+        option.value = tab_index;
+        select.appendChild(option);
+    }
+}
+
 /* ===== Common functions ===== */
 function set_tabmark_list_for_select_box( select_box_id ) {
     var select = document.getElementById(select_box_id);
+    
+    clear_select_box( select );
     
     for( id in tabmark_list ) {
         var option = document.createElement("option");
@@ -111,6 +171,15 @@ function get_tabmark_list() {
 
 function save_tabmark_list( json_data ) {
     localStorage["tabmark"] = JSON.stringify( json_data );
+}
+
+function clear_select_box( select_box_elem )
+{
+    if( select_box_elem.hasChildNodes() ) {
+        while( select_box_elem.childNodes.length > 0 ) {
+            select_box_elem.removeChild( select_box_elem.firstChild );
+        }
+    }
 }
 
 function get_new_id() {
