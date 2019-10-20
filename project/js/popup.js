@@ -155,8 +155,12 @@ function delete_tabmark() {
 
 function delet_tab() {
     var delete_tabmark_id = document.getElementById("sb_edit_tabmark_list").value;
-    var delete_tab_id = document.getElementById("sb_edit_tab_list").value;
-    delete tabmark_list[delete_tabmark_id].data.splice(delete_tab_id, 1);
+    var options_delete_tab_list = document.getElementById('sb_edit_tab_list').options;
+    for( var i = options_delete_tab_list.length - 1; i >= 0; i-- ) {   // リストボックスを削除していくので、後ろからサーチする
+        if( options_delete_tab_list[i].selected ) {
+            delete tabmark_list[delete_tabmark_id].data.splice(i, 1);
+        }
+    }
     update_edit_tablist();
 }
 
