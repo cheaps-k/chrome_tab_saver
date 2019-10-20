@@ -36,6 +36,7 @@ function change_page() {
 function event_activate_save() {
     update_save_tab_list();
     update_save_target_tabmark_list();
+    document.getElementById('it_save_new_tabmark').value = "";
 }
 
 function event_activate_restore() {
@@ -53,9 +54,10 @@ function add_tab_list() {
     /* Get save tab list */
     var options_tab_list = document.getElementById('sb_save_tab_list').options;
     var save_tab_ids = [];
-    for( var i = 0; i < options_tab_list.length; i++ ) {
+    for( var i = options_tab_list.length - 1; i >= 0; i-- ) {   // リストボックスを削除していくので、後ろからサーチする
         if( options_tab_list[i].selected ) {
             save_tab_ids.push( options_tab_list[i].value );
+            document.getElementById('sb_save_tab_list').remove(i);
         }
     }
     
@@ -78,6 +80,8 @@ function add_tab_list() {
                 }
             }
         }
+        update_save_target_tabmark_list();
+        document.getElementById('it_save_new_tabmark').value = "";
     });
 }
 
@@ -85,6 +89,7 @@ function update_save_tab_list() {
     chrome.tabs.query({currentWindow: true}, function( tabs ) {
         var select = document.getElementById("sb_save_tab_list");
         
+        clear_select_box(select);
         for( var index = 0; index < tabs.length; index++ ) {
             var option = document.createElement("option");
             option.text = tabs[index].title;
