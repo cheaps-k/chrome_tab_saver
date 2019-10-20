@@ -1,6 +1,14 @@
+var tabmark_list;
+
 window.onload = function() {
+    addEventListener("unload", function (event) {
+        save_tabmark_list(tabmark_list);
+    }, true);
+    
     document.getElementById('btn_restore_open_tabs').addEventListener('click', open_tab_list);
     document.getElementById('btn_save_tabs').addEventListener('click', add_tab_list);
+
+    tabmark_list = get_tabmark_list();
 
     update_save_tab_list();
     update_save_target_tabmark_list();
@@ -9,7 +17,6 @@ window.onload = function() {
 
 /* ===== Save functions ===== */
 function add_tab_list() {
-    var tabmark_list = get_tabmark_list();
     var options_tab_list = document.getElementById('sb_save_tab_list').options;
     var save_tab_ids = [];
     for( var i = 0; i < options_tab_list.length; i++ ) {
@@ -30,7 +37,6 @@ function add_tab_list() {
                 }
             }
         }
-        save_tabmark_list( tabmark_list );
     });
 }
 
@@ -53,12 +59,10 @@ function update_save_target_tabmark_list() {
 
 /* ===== Restore functions ===== */
 function open_tab_list() {
-    var tabmark_list = get_tabmark_list();
     var options = document.getElementById('sb_restore_tabmark_list').options;
     
     for( var i = 0; i < options.length; i++ ) {
         if( options[i].selected ) {
-            console.log(options[i].value);
             var tab_list_data = tabmark_list[options[i].value].data;
             for( var data_index = 0; data_index < tab_list_data.length; data_index++ ) {
                 chrome.tabs.create({
@@ -78,7 +82,6 @@ function update_restore_tabmark_list() {
 
 /* ===== Common functions ===== */
 function set_tabmark_list_for_select_box( select_box_id ) {
-    var tabmark_list = get_tabmark_list();
     var select = document.getElementById(select_box_id);
     
     for( id in tabmark_list ) {
@@ -106,7 +109,7 @@ function save_tabmark_list( json_data ) {
 
 /* ===== For development ===== */
 function store_test_data() {
-    var test_data = {
+    var test_tabmark_list = {
                         20191020114500: {
                             name: "browser",
                             data: [
@@ -134,6 +137,6 @@ function store_test_data() {
                                 ]
                         }
                     };
-    save_tabmark_list( test_data );
+    save_tabmark_list(test_tabmark_list);
 }
-store_test_data();
+//store_test_data();
