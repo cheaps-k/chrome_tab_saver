@@ -1,15 +1,24 @@
+*:focus {
+    outline: none;
+}
+
+::selection {
+    background: #5ab4bd;
+    color: #fff;
+}
+
 body {
     width: 300px;
-    height: 500px;
+    height: 483px;
+    font-family: "Meiryo UI";
+    user-select: none;
 }
 
 /* タブ切り替え全体のスタイル */
 .tabs {
-    margin-top: 50px;
-    padding-bottom: 10px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    margin: 0 auto;}
+}
 
 /* タブのスタイル */
 .tab_item {
@@ -39,10 +48,10 @@ input[name="tab_item"] {
 /* タブ切り替えの中身のスタイル */
 .tab_content {
     display: none;
-    padding: 40px 40px 0;
+    padding: 0px 15px;
     clear: both;
     overflow: hidden;
-    height: 415px;
+    height: 450px;
 }
 
 /* 選択されているタブのコンテンツのみを表示 */
@@ -61,4 +70,58 @@ input[name="tab_item"] {
 select {
     width: 100%;
     height: 10em;
+}
+
+h1 {
+    font-size: 15px;
+    color: #fff;
+    position: relative;
+    padding: 0.6em;
+    background: #5ab4bd;
+}
+
+h1:after {
+    position: absolute;
+    content: '';
+    top: 100%;
+    left: 30px;
+    border: 10px solid transparent;
+    border-top: 10px solid #5ab4bd;
+    width: 0;
+    height: 0;
+}
+
+hr {
+    border-top: 1.5px dashed #5ab4bd;
+    border-bottom: 0px solid #5ab4bd;
+}
+
+button {
+    position: relative;
+    display: inline-block;
+    margin: 2px;
+    float: right;
+    width: 80px;
+    font-weight: bold;
+    font-size: 13px;
+    border: none;
+    text-decoration: none;
+    color: #565656;
+    background: #d9d9d9;
+    transition: .4s;
+}
+
+button:hover {
+    background: #5ab4bd;
+    color: #fff;
+}
+
+#it_save_new_tabmark {
+    margin-top: 2px;
+    width: 199px;
+}
+
+#it_edit_new_name {
+    margin-top: 2px;
+    width: 100px;
 }

@@ -14,26 +14,28 @@
             <label class="tab_item" for="rd_edit">編集</label>
 
             <div class="tab_content" id="save_content">
-                保存するタブ
+                <h1>保存するタブの選択</h1>
                 <select id="sb_save_tab_list" multiple></select>
-                保存先
+                <h1>保存先の選択</h1>
                 <select id="sb_save_target_tabmark_list" size="10"></select>
-                New Tabmark <input type="text" id="it_save_new_tabmark">
+                新しい保存先 <input type="text" id="it_save_new_tabmark">
+                <hr>
                 <button type="button" id="btn_save_tabs">保存</button>
             </div>
 
             <div class="tab_content" id="restore_content">
+                <h1>復元するタブマークの選択</h1>
                 <select id="sb_restore_tabmark_list" multiple></select>
                 <button type="button" id="btn_restore_open_tabs">復元</button>
             </div>
 
             <div class="tab_content" id="edit_content">
-                タブマーク
+                <h1>編集するタブマークの選択</h1>
                 <select id="sb_edit_tabmark_list" size="10"></select>
                 <input type="text" id="it_edit_new_name">
-                <button type="button" id="btn_edit_rename_tabmark">名前変更</button>
                 <button type="button" id="btn_edit_delete_tabmark">削除</button>
-                タブ
+                <button type="button" id="btn_edit_rename_tabmark">名前変更</button>
+                <h1>編集するタブの選択</h1>
                 <select id="sb_edit_tab_list" size="10"></select>
                 <button type="button" id="btn_edit_delete_tab">削除</button>
             </div>
