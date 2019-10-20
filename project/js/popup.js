@@ -102,13 +102,15 @@ function open_tab_list() {
     
     for( var i = 0; i < options.length; i++ ) {
         if( options[i].selected ) {
-            var tab_list_data = tabmark_list[options[i].value].data;
+            var tabmark_id = options[i].value;
+            var tab_list_data = tabmark_list[tabmark_id].data;
             for( var data_index = 0; data_index < tab_list_data.length; data_index++ ) {
                 chrome.tabs.create({
                     url: tab_list_data[data_index].url,
                     active: false
                 });
             }
+            delete tabmark_list[tabmark_id];
         }
     }
     
