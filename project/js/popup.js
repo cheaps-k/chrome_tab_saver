@@ -17,6 +17,7 @@ window.onload = function() {
 
 /* ===== Save functions ===== */
 function add_tab_list() {
+    /* Get save tab list */
     var options_tab_list = document.getElementById('sb_save_tab_list').options;
     var save_tab_ids = [];
     for( var i = 0; i < options_tab_list.length; i++ ) {
@@ -26,7 +27,14 @@ function add_tab_list() {
     }
     
     chrome.tabs.query({currentWindow: true}, function( tabs ) {
-        var save_target_id = document.getElementById("sb_save_target_tabmark_list").value;
+        var new_tabmark = document.getElementById('it_save_new_tabmark').value;
+        var save_target_id;
+        if( new_tabmark == "" ) {
+            save_target_id = document.getElementById("sb_save_target_tabmark_list").value;
+        } else {
+            save_target_id = get_new_id();
+            tabmark_list[save_target_id] = {name: new_tabmark, data: []};
+        }
         
         for( var index = 0; index < tabs.length; index++ ) {
             for( var save_tab_index = 0; save_tab_index < save_tab_ids.length; save_tab_index++ ) {
@@ -105,7 +113,23 @@ function save_tabmark_list( json_data ) {
     localStorage["tabmark"] = JSON.stringify( json_data );
 }
 
+function get_new_id() {
+    var now = new Date();
+    
+    var year = number_to_string_with_zero_pad(now.getFullYear(), 4);
+    var month = number_to_string_with_zero_pad(now.getMonth() + 1, 2);
+    var date = number_to_string_with_zero_pad(now.getDate(), 2);
+    var hour = number_to_string_with_zero_pad(now.getHours(), 2);
+    var min = number_to_string_with_zero_pad(now.getMinutes(), 2);
+    var sec = number_to_string_with_zero_pad(now.getSeconds(), 2);
+    var msec = number_to_string_with_zero_pad(now.getMilliseconds(), 2);
+    
+    return year + month + date + hour + sec + msec;
+}
 
+function number_to_string_with_zero_pad( num, len ){
+	return ( Array(len).join('0') + num ).slice( -len );
+}
 
 /* ===== For development ===== */
 function store_test_data() {
