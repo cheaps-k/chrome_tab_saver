@@ -12,6 +12,8 @@ window.onload = function() {
     }
     page_activate_event = [event_activate_save, event_activate_restore, event_activate_edit];
     
+    document.getElementById('sb_save_target_tabmark_list').addEventListener('change', select_save_tabmark);
+    document.getElementById('it_save_new_tabmark').addEventListener('input', input_new_tabmark);
     document.getElementById('btn_save_tabs').addEventListener('click', add_tab_list);
     document.getElementById('btn_restore_open_tabs').addEventListener('click', open_tab_list);
     document.getElementById('sb_edit_tabmark_list').addEventListener('change', select_edit_tabmark);
@@ -83,6 +85,14 @@ function add_tab_list() {
         update_save_target_tabmark_list();
         document.getElementById('it_save_new_tabmark').value = "";
     });
+}
+
+function select_save_tabmark() {
+    document.getElementById('it_save_new_tabmark').value = "";
+}
+
+function input_new_tabmark() {
+    document.getElementById("sb_save_target_tabmark_list").selectedIndex = -1;
 }
 
 function update_save_tab_list() {
