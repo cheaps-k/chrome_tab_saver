@@ -44,6 +44,8 @@ function event_activate_restore() {
 
 function event_activate_edit() {
     update_edit_tabmark_list();
+    document.getElementById('it_edit_new_name').value = "";
+    clear_select_box(document.getElementById('sb_edit_tab_list'));
 }
 
 /* ===== Save functions ===== */
@@ -135,17 +137,15 @@ function select_edit_tabmark() {
 function rename_tabmark() {
     var new_name = document.getElementById("it_edit_new_name").value;
     var rename_tabmark_id = document.getElementById("sb_edit_tabmark_list").value;
-    tabmark_list[rename_tabmark_id][name] = new_name;
-    update_edit_tabmark_list();
-    document.getElementById("it_edit_new_name").value = "";
+    tabmark_list[rename_tabmark_id].name = new_name;
+    event_activate_edit();
 }
 
 function delete_tabmark() {
     var delete_tabmark_id = document.getElementById("sb_edit_tabmark_list").value;
     delete tabmark_list[delete_tabmark_id];
     update_edit_tabmark_list();
-    document.getElementById("it_edit_new_name").value = "";
-    clear_select_box(document.getElementById("sb_edit_tab_list"));
+    event_activate_edit();
 }
 
 function delet_tab() {
