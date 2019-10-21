@@ -199,6 +199,9 @@ function select_restore_tabgroup() {
 }
 
 function set_restore_is_delete_tabgroup() {
+    if( !( "is_delete_at_restore" in config ) ) {
+        config["is_delete_at_restore"] = true;
+    }
     document.getElementById('cb_restore_is_delete_tabgroup').checked = config["is_delete_at_restore"];
 }
 
