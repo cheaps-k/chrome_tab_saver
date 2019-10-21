@@ -104,7 +104,7 @@ button {
     width: 80px;
     font-weight: bold;
     font-size: 13px;
-    border: none;
+    border: solid 1px #5ab4bd;
     text-decoration: none;
     color: #565656;
     background: #d9d9d9;
@@ -117,7 +117,8 @@ button:hover {
 }
 
 button:disabled {
-    background: #777777;
+    background: #909090;
+    border: solid 1px #909090;
     color: #565656;
 }
 
