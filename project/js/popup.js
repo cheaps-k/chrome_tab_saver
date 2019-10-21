@@ -1,10 +1,10 @@
 var config;
-var tabmark_list;
+var tabgroup_list;
 var page_activate_event;
 
 window.onload = function() {
     addEventListener("unload", function (event) {
-        save_tabmark_list(tabmark_list);
+        save_tabgroup_list(tabgroup_list);
         save_config_data(config);
     }, true);
     
@@ -14,17 +14,17 @@ window.onload = function() {
     }
     page_activate_event = [event_activate_save, event_activate_restore, event_activate_edit];
     
-    document.getElementById('sb_save_target_tabmark_list').addEventListener('change', select_save_tabmark);
-    document.getElementById('it_save_new_tabmark').addEventListener('input', input_new_tabmark);
+    document.getElementById('sb_save_target_tabgroup_list').addEventListener('change', select_save_tabgroup);
+    document.getElementById('it_save_new_tabgroup').addEventListener('input', input_new_tabgroup);
     document.getElementById('btn_save_tabs').addEventListener('click', add_tab_list);
-    document.getElementById('cb_restore_is_delete_tabmark').addEventListener('click', change_is_delete_at_restore);
+    document.getElementById('cb_restore_is_delete_tabgroup').addEventListener('click', change_is_delete_at_restore);
     document.getElementById('btn_restore_open_tabs').addEventListener('click', open_tab_list);
-    document.getElementById('sb_edit_tabmark_list').addEventListener('change', select_edit_tabmark);
-    document.getElementById('btn_edit_rename_tabmark').addEventListener('click', rename_tabmark);
-    document.getElementById('btn_edit_delete_tabmark').addEventListener('click', delete_tabmark);
+    document.getElementById('sb_edit_tabgroup_list').addEventListener('change', select_edit_tabgroup);
+    document.getElementById('btn_edit_rename_tabgroup').addEventListener('click', rename_tabgroup);
+    document.getElementById('btn_edit_delete_tabgroup').addEventListener('click', delete_tabgroup);
     document.getElementById('btn_edit_delete_tab').addEventListener('click', delet_tab);
 
-    tabmark_list = get_tabmark_list();
+    tabgroup_list = get_tabgroup_list();
     config = get_config_data();
     event_activate_save();  // Default page is save.
 };
@@ -41,17 +41,17 @@ function change_page() {
 
 function event_activate_save() {
     update_save_tab_list();
-    update_save_target_tabmark_list();
-    document.getElementById('it_save_new_tabmark').value = "";
+    update_save_target_tabgroup_list();
+    document.getElementById('it_save_new_tabgroup').value = "";
 }
 
 function event_activate_restore() {
-    set_restore_is_delete_tabmark();
-    update_restore_tabmark_list();
+    set_restore_is_delete_tabgroup();
+    update_restore_tabgroup_list();
 }
 
 function event_activate_edit() {
-    update_edit_tabmark_list();
+    update_edit_tabgroup_list();
     document.getElementById('it_edit_new_name').value = "";
     clear_select_box(document.getElementById('sb_edit_tab_list'));
 }
@@ -69,35 +69,35 @@ function add_tab_list() {
     }
     
     chrome.tabs.query({currentWindow: true}, function( tabs ) {
-        var new_tabmark = document.getElementById('it_save_new_tabmark').value;
+        var new_tabgroup = document.getElementById('it_save_new_tabgroup').value;
         var save_target_id;
-        if( new_tabmark == "" ) {
-            save_target_id = document.getElementById("sb_save_target_tabmark_list").value;
+        if( new_tabgroup == "" ) {
+            save_target_id = document.getElementById("sb_save_target_tabgroup_list").value;
         } else {
             save_target_id = get_new_id();
-            tabmark_list[save_target_id] = {name: new_tabmark, data: []};
+            tabgroup_list[save_target_id] = {name: new_tabgroup, data: []};
         }
         
         for( var index = 0; index < tabs.length; index++ ) {
             for( var save_tab_index = 0; save_tab_index < save_tab_ids.length; save_tab_index++ ) {
                 if( tabs[index].id == save_tab_ids[save_tab_index] ) {
-                    tabmark_list[save_target_id].data.push({ name: tabs[index].title, url: tabs[index].url });
+                    tabgroup_list[save_target_id].data.push({ name: tabs[index].title, url: tabs[index].url });
                     chrome.tabs.remove(tabs[index].id);
                     break;
                 }
             }
         }
-        update_save_target_tabmark_list();
-        document.getElementById('it_save_new_tabmark').value = "";
+        update_save_target_tabgroup_list();
+        document.getElementById('it_save_new_tabgroup').value = "";
     });
 }
 
-function select_save_tabmark() {
-    document.getElementById('it_save_new_tabmark').value = "";
+function select_save_tabgroup() {
+    document.getElementById('it_save_new_tabgroup').value = "";
 }
 
-function input_new_tabmark() {
-    document.getElementById("sb_save_target_tabmark_list").selectedIndex = -1;
+function input_new_tabgroup() {
+    document.getElementById("sb_save_target_tabgroup_list").selectedIndex = -1;
 }
 
 function update_save_tab_list() {
@@ -114,22 +114,22 @@ function update_save_tab_list() {
     });
 }
 
-function update_save_target_tabmark_list() {
-    set_tabmark_list_for_select_box("sb_save_target_tabmark_list");
+function update_save_target_tabgroup_list() {
+    set_tabgroup_list_for_select_box("sb_save_target_tabgroup_list");
 }
 
 /* ===== Restore functions ===== */
 function change_is_delete_at_restore() {
-    config["is_delete_at_restore"] = document.getElementById('cb_restore_is_delete_tabmark').checked;
+    config["is_delete_at_restore"] = document.getElementById('cb_restore_is_delete_tabgroup').checked;
 }
 
 function open_tab_list() {
-    var options = document.getElementById('sb_restore_tabmark_list').options;
+    var options = document.getElementById('sb_restore_tabgroup_list').options;
     
     for( var i = 0; i < options.length; i++ ) {
         if( options[i].selected ) {
-            var tabmark_id = options[i].value;
-            var tab_list_data = tabmark_list[tabmark_id].data;
+            var tabgroup_id = options[i].value;
+            var tab_list_data = tabgroup_list[tabgroup_id].data;
             for( var data_index = 0; data_index < tab_list_data.length; data_index++ ) {
                 chrome.tabs.create({
                     url: tab_list_data[data_index].url,
@@ -137,7 +137,7 @@ function open_tab_list() {
                 });
             }
             if( config["is_delete_at_restore"] ) {
-                delete tabmark_list[tabmark_id];
+                delete tabgroup_list[tabgroup_id];
             }
         }
     }
@@ -145,61 +145,61 @@ function open_tab_list() {
     window.close();
 }
 
-function update_restore_tabmark_list() {
-    set_tabmark_list_for_select_box("sb_restore_tabmark_list");
+function update_restore_tabgroup_list() {
+    set_tabgroup_list_for_select_box("sb_restore_tabgroup_list");
 }
 
-function set_restore_is_delete_tabmark() {
-    document.getElementById('cb_restore_is_delete_tabmark').checked = config["is_delete_at_restore"];
+function set_restore_is_delete_tabgroup() {
+    document.getElementById('cb_restore_is_delete_tabgroup').checked = config["is_delete_at_restore"];
 }
 
 /* ===== Edit functions ===== */
-function select_edit_tabmark() {
-    var tabmark_list = document.getElementById("sb_edit_tabmark_list");
-    var select_tabmark_name = tabmark_list.options[tabmark_list.selectedIndex].text;
-    var select_tabmark_id = tabmark_list.options[tabmark_list.selectedIndex].value;
+function select_edit_tabgroup() {
+    var tabgroup_list = document.getElementById("sb_edit_tabgroup_list");
+    var select_tabgroup_name = tabgroup_list.options[tabgroup_list.selectedIndex].text;
+    var select_tabgroup_id = tabgroup_list.options[tabgroup_list.selectedIndex].value;
     
-    document.getElementById("it_edit_new_name").value = select_tabmark_name;
+    document.getElementById("it_edit_new_name").value = select_tabgroup_name;
     
     update_edit_tablist();
 }
 
-function rename_tabmark() {
+function rename_tabgroup() {
     var new_name = document.getElementById("it_edit_new_name").value;
-    var rename_tabmark_id = document.getElementById("sb_edit_tabmark_list").value;
-    tabmark_list[rename_tabmark_id].name = new_name;
+    var rename_tabgroup_id = document.getElementById("sb_edit_tabgroup_list").value;
+    tabgroup_list[rename_tabgroup_id].name = new_name;
     event_activate_edit();
 }
 
-function delete_tabmark() {
-    var delete_tabmark_id = document.getElementById("sb_edit_tabmark_list").value;
-    delete tabmark_list[delete_tabmark_id];
-    update_edit_tabmark_list();
+function delete_tabgroup() {
+    var delete_tabgroup_id = document.getElementById("sb_edit_tabgroup_list").value;
+    delete tabgroup_list[delete_tabgroup_id];
+    update_edit_tabgroup_list();
     event_activate_edit();
 }
 
 function delet_tab() {
-    var delete_tabmark_id = document.getElementById("sb_edit_tabmark_list").value;
+    var delete_tabgroup_id = document.getElementById("sb_edit_tabgroup_list").value;
     var options_delete_tab_list = document.getElementById('sb_edit_tab_list').options;
     for( var i = options_delete_tab_list.length - 1; i >= 0; i-- ) {   // リストボックスを削除していくので、後ろからサーチする
         if( options_delete_tab_list[i].selected ) {
-            delete tabmark_list[delete_tabmark_id].data.splice(i, 1);
+            delete tabgroup_list[delete_tabgroup_id].data.splice(i, 1);
         }
     }
     update_edit_tablist();
 }
 
-function update_edit_tabmark_list() {
-    set_tabmark_list_for_select_box("sb_edit_tabmark_list");
+function update_edit_tabgroup_list() {
+    set_tabgroup_list_for_select_box("sb_edit_tabgroup_list");
 }
 
 function update_edit_tablist() {
-    var select_tabmark_id = document.getElementById("sb_edit_tabmark_list").value;
+    var select_tabgroup_id = document.getElementById("sb_edit_tabgroup_list").value;
     var select = document.getElementById("sb_edit_tab_list");
     
     clear_select_box( select );
     
-    var tab_data = tabmark_list[select_tabmark_id].data;
+    var tab_data = tabgroup_list[select_tabgroup_id].data;
     for( var tab_index = 0; tab_index < tab_data.length; tab_index++ ) {
         var option = document.createElement("option");
         option.text = tab_data[tab_index].name;
@@ -209,14 +209,14 @@ function update_edit_tablist() {
 }
 
 /* ===== Common functions ===== */
-function set_tabmark_list_for_select_box( select_box_id ) {
+function set_tabgroup_list_for_select_box( select_box_id ) {
     var select = document.getElementById(select_box_id);
     
     clear_select_box( select );
     
-    for( id in tabmark_list ) {
+    for( id in tabgroup_list ) {
         var option = document.createElement("option");
-        option.text = tabmark_list[id].name;
+        option.text = tabgroup_list[id].name;
         option.value = id;
         select.appendChild(option);
     }
@@ -230,12 +230,12 @@ function save_config_data( json_data ) {
     save_data( "config", json_data );
 }
 
-function get_tabmark_list() {
-    return read_saved_data( "tabmark" );
+function get_tabgroup_list() {
+    return read_saved_data( "tabgroup" );
 }
 
-function save_tabmark_list( json_data ) {
-    save_data( "tabmark", json_data );
+function save_tabgroup_list( json_data ) {
+    save_data( "tabgroup", json_data );
 }
 
 function read_saved_data( data_tag ) {
@@ -280,7 +280,7 @@ function number_to_string_with_zero_pad( num, len ){
 
 /* ===== For development ===== */
 function store_test_data() {
-    var test_tabmark_list = {
+    var test_tabgroup_list = {
                         20191020114500: {
                             name: "browser",
                             data: [
@@ -308,6 +308,6 @@ function store_test_data() {
                                 ]
                         }
                     };
-    save_tabmark_list(test_tabmark_list);
+    save_tabgroup_list(test_tabgroup_list);
 }
 //store_test_data();

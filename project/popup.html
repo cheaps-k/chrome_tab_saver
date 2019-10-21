@@ -16,27 +16,27 @@
             <div class="tab_content" id="save_content">
                 <h1>保存するタブの選択</h1>
                 <select id="sb_save_tab_list" multiple></select>
-                <h1>保存先の選択</h1>
-                <select id="sb_save_target_tabmark_list" size="10"></select>
-                新しい保存先 <input type="text" id="it_save_new_tabmark">
+                <h1>保存先タブグループの選択</h1>
+                <select id="sb_save_target_tabgroup_list" size="10"></select>
+                新しい保存先 <input type="text" id="it_save_new_tabgroup">
                 <hr>
                 <button type="button" id="btn_save_tabs">保存</button>
             </div>
 
             <div class="tab_content" id="restore_content">
-                <h1>復元するタブマークの選択</h1>
-                <select id="sb_restore_tabmark_list" multiple></select>
-                <input type="checkbox" id="cb_restore_is_delete_tabmark">
-                <label class="label_for_checkbox" for="cb_restore_is_delete_tabmark">復元時にタブマークを削除</label>
+                <h1>復元するタブグループの選択</h1>
+                <select id="sb_restore_tabgroup_list" multiple></select>
+                <input type="checkbox" id="cb_restore_is_delete_tabgroup">
+                <label class="label_for_checkbox" for="cb_restore_is_delete_tabgroup">復元時にタブグループを削除</label>
                 <button type="button" id="btn_restore_open_tabs">復元</button>
             </div>
 
             <div class="tab_content" id="edit_content">
-                <h1>編集するタブマークの選択</h1>
-                <select id="sb_edit_tabmark_list" size="10"></select>
+                <h1>編集するタブグループの選択</h1>
+                <select id="sb_edit_tabgroup_list" size="10"></select>
                 <input type="text" id="it_edit_new_name">
-                <button type="button" id="btn_edit_delete_tabmark">削除</button>
-                <button type="button" id="btn_edit_rename_tabmark">名前変更</button>
+                <button type="button" id="btn_edit_delete_tabgroup">削除</button>
+                <button type="button" id="btn_edit_rename_tabgroup">名前変更</button>
                 <h1>編集するタブの選択</h1>
                 <select id="sb_edit_tab_list" multiple></select>
                 <button type="button" id="btn_edit_delete_tab">削除</button>
