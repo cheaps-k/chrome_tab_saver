@@ -68,15 +68,25 @@ function event_activate_edit() {
 /* ===== Save functions ===== */
 function save_tab_list() {
     /* Get save tab list */
-    var options_tab_list = document.getElementById('sb_save_tab_list').options;
+    var elem_save_tab_list = document.getElementById('sb_save_tab_list');
+    var options_tab_list = elem_save_tab_list.options;
     var save_tab_ids = [];
     for( var i = options_tab_list.length - 1; i >= 0; i-- ) {   // リストボックスを削除していくので、後ろからサーチする
         if( options_tab_list[i].selected ) {
             save_tab_ids.push( options_tab_list[i].value );
-            document.getElementById('sb_save_tab_list').remove(i);
+            elem_save_tab_list.remove(i);
         }
     }
     
+    /* If selected all tabs, open new tab */
+    if( elem_save_tab_list.options.length == 0 ) {
+        chrome.tabs.create({
+            url: "chrome://newtab/",
+            active: false
+        });
+    }
+    
+    /* Save and close tabs */
     chrome.tabs.query({currentWindow: true}, function( tabs ) {
         var new_tabgroup = document.getElementById('it_save_new_tabgroup').value;
         var save_target_id;
