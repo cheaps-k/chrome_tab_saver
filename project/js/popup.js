@@ -173,7 +173,7 @@ function open_tab_list() {
         }
     }
     
-    window.close();
+    event_activate_restore();
 }
 
 function update_restore_tabgroup_list() {
