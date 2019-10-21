@@ -18,12 +18,16 @@ window.onload = function() {
     document.getElementById('sb_save_target_tabgroup_list').addEventListener('change', select_save_tabgroup);
     document.getElementById('it_save_new_tabgroup').addEventListener('input', input_new_tabgroup);
     document.getElementById('btn_save_tabs').addEventListener('click', save_tab_list);
+    
     document.getElementById('sb_restore_tabgroup_list').addEventListener('change', select_restore_tabgroup);
     document.getElementById('cb_restore_is_delete_tabgroup').addEventListener('click', change_is_delete_at_restore);
     document.getElementById('btn_restore_open_tabs').addEventListener('click', open_tab_list);
+    
     document.getElementById('sb_edit_tabgroup_list').addEventListener('change', select_edit_tabgroup);
+    document.getElementById('it_edit_new_name').addEventListener('input', input_tabgroup_new_name);
     document.getElementById('btn_edit_rename_tabgroup').addEventListener('click', rename_tabgroup);
     document.getElementById('btn_edit_delete_tabgroup').addEventListener('click', delete_tabgroup);
+    document.getElementById('sb_edit_tab_list').addEventListener('change', select_edit_tab);
     document.getElementById('btn_edit_delete_tab').addEventListener('click', delet_tab);
 
     tabgroup_list = get_tabgroup_list();
@@ -58,6 +62,7 @@ function event_activate_edit() {
     update_edit_tabgroup_list();
     document.getElementById('it_edit_new_name').value = "";
     clear_select_box(document.getElementById('sb_edit_tab_list'));
+    update_edit_buttons();
 }
 
 /* ===== Save functions ===== */
@@ -189,6 +194,7 @@ function update_restore_button_state() {
 
 function is_restore_enable() {
     var rtn = false;
+    
     if( document.getElementById("sb_restore_tabgroup_list").selectedIndex != -1 ) {
         rtn = true;
     }
@@ -205,6 +211,15 @@ function select_edit_tabgroup() {
     document.getElementById("it_edit_new_name").value = select_tabgroup_name;
     
     update_edit_tablist();
+    update_edit_buttons();
+}
+
+function select_edit_tab() {
+    update_edit_buttons();
+}
+
+function input_tabgroup_new_name() {
+    update_edit_buttons();
 }
 
 function rename_tabgroup() {
@@ -249,6 +264,56 @@ function update_edit_tablist() {
         option.value = tab_index;
         select.appendChild(option);
     }
+}
+
+function update_edit_buttons() {
+    update_rename_button_state();
+    update_delete_tabgroup_button_state();
+    update_delete_tab_button_state();
+}
+
+function update_rename_button_state() {
+    document.getElementById('btn_edit_rename_tabgroup').disabled = !is_rename_enable();
+}
+
+function is_rename_enable() {
+    var rtn = false;
+    
+    if( ( document.getElementById("sb_edit_tabgroup_list").selectedIndex != -1 )
+     && ( document.getElementById("it_edit_new_name").value != "" ) ) {
+        rtn = true;
+    }
+    
+    return rtn;
+}
+
+function update_delete_tabgroup_button_state() {
+    document.getElementById('btn_edit_delete_tabgroup').disabled = !is_delete_tabgroup_enable();
+}
+
+function is_delete_tabgroup_enable() {
+    var rtn = false;
+    
+    if( document.getElementById("sb_edit_tabgroup_list").selectedIndex != -1 ) {
+        rtn = true;
+    }
+    
+    return rtn;
+}
+
+function update_delete_tab_button_state() {
+    document.getElementById('btn_edit_delete_tab').disabled = !is_delete_tab_enable();
+}
+
+function is_delete_tab_enable() {
+    var rtn = false;
+    
+    if( ( document.getElementById("sb_edit_tabgroup_list").selectedIndex != -1 )
+     && ( document.getElementById("sb_edit_tab_list").selectedIndex != -1 ) ) {
+        rtn = true;
+    }
+    
+    return rtn;
 }
 
 /* ===== Common functions ===== */
