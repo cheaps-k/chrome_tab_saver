@@ -18,6 +18,7 @@ window.onload = function() {
     document.getElementById('sb_save_target_tabgroup_list').addEventListener('change', select_save_tabgroup);
     document.getElementById('it_save_new_tabgroup').addEventListener('input', input_new_tabgroup);
     document.getElementById('btn_save_tabs').addEventListener('click', save_tab_list);
+    document.getElementById('sb_restore_tabgroup_list').addEventListener('change', select_restore_tabgroup);
     document.getElementById('cb_restore_is_delete_tabgroup').addEventListener('click', change_is_delete_at_restore);
     document.getElementById('btn_restore_open_tabs').addEventListener('click', open_tab_list);
     document.getElementById('sb_edit_tabgroup_list').addEventListener('change', select_edit_tabgroup);
@@ -50,6 +51,7 @@ function event_activate_save() {
 function event_activate_restore() {
     set_restore_is_delete_tabgroup();
     update_restore_tabgroup_list();
+    update_restore_button_state();
 }
 
 function event_activate_edit() {
@@ -141,6 +143,7 @@ function is_save_enable() {
     
     return rtn;
 }
+
 /* ===== Restore functions ===== */
 function change_is_delete_at_restore() {
     config["is_delete_at_restore"] = document.getElementById('cb_restore_is_delete_tabgroup').checked;
@@ -172,8 +175,25 @@ function update_restore_tabgroup_list() {
     set_tabgroup_list_for_select_box("sb_restore_tabgroup_list");
 }
 
+function select_restore_tabgroup() {
+    update_restore_button_state();
+}
+
 function set_restore_is_delete_tabgroup() {
     document.getElementById('cb_restore_is_delete_tabgroup').checked = config["is_delete_at_restore"];
+}
+
+function update_restore_button_state() {
+    document.getElementById('btn_restore_open_tabs').disabled = !is_restore_enable();
+}
+
+function is_restore_enable() {
+    var rtn = false;
+    if( document.getElementById("sb_restore_tabgroup_list").selectedIndex != -1 ) {
+        rtn = true;
+    }
+    
+    return rtn;
 }
 
 /* ===== Edit functions ===== */
