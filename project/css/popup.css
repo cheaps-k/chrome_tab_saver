@@ -101,7 +101,7 @@ button {
     display: inline-block;
     margin: 2px;
     float: right;
-    width: 80px;
+    width: 75px;
     font-weight: bold;
     font-size: 13px;
     border: solid 1px #5ab4bd;
@@ -138,6 +138,6 @@ input[type="checkbox"] {
 }
 
 #it_edit_new_name {
-    margin-top: 2px;
-    width: 100px;
+    margin-top: 3px;
+    width: 110px;
 }
