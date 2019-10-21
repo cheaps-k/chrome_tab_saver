@@ -277,37 +277,3 @@ function get_new_id() {
 function number_to_string_with_zero_pad( num, len ){
 	return ( Array(len).join('0') + num ).slice( -len );
 }
-
-/* ===== For development ===== */
-function store_test_data() {
-    var test_tabgroup_list = {
-                        20191020114500: {
-                            name: "browser",
-                            data: [
-                                    {
-                                        name: "google",
-                                        url: "https://www.google.com/"
-                                    },
-                                    {
-                                        name: "yahoo",
-                                        url: "https://www.yahoo.co.jp/"
-                                    }
-                                ]
-                        },
-                        20191020114600: {
-                            name: "SNS",
-                            data: [
-                                    {
-                                        name: "twitter",
-                                        url: "https://twitter.com/"
-                                    },
-                                    {
-                                        name: "instagram",
-                                        url: "https://www.instagram.com/"
-                                    }
-                                ]
-                        }
-                    };
-    save_tabgroup_list(test_tabgroup_list);
-}
-//store_test_data();
