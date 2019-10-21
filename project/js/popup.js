@@ -1,9 +1,11 @@
+var config;
 var tabmark_list;
 var page_activate_event;
 
 window.onload = function() {
     addEventListener("unload", function (event) {
         save_tabmark_list(tabmark_list);
+        save_config_data(config);
     }, true);
     
     var pages = document.getElementsByName('tab_item');
@@ -15,6 +17,7 @@ window.onload = function() {
     document.getElementById('sb_save_target_tabmark_list').addEventListener('change', select_save_tabmark);
     document.getElementById('it_save_new_tabmark').addEventListener('input', input_new_tabmark);
     document.getElementById('btn_save_tabs').addEventListener('click', add_tab_list);
+    document.getElementById('cb_restore_is_delete_tabmark').addEventListener('click', change_is_delete_at_restore);
     document.getElementById('btn_restore_open_tabs').addEventListener('click', open_tab_list);
     document.getElementById('sb_edit_tabmark_list').addEventListener('change', select_edit_tabmark);
     document.getElementById('btn_edit_rename_tabmark').addEventListener('click', rename_tabmark);
@@ -22,6 +25,7 @@ window.onload = function() {
     document.getElementById('btn_edit_delete_tab').addEventListener('click', delet_tab);
 
     tabmark_list = get_tabmark_list();
+    config = get_config_data();
     event_activate_save();  // Default page is save.
 };
 
@@ -42,6 +46,7 @@ function event_activate_save() {
 }
 
 function event_activate_restore() {
+    set_restore_is_delete_tabmark();
     update_restore_tabmark_list();
 }
 
@@ -114,6 +119,10 @@ function update_save_target_tabmark_list() {
 }
 
 /* ===== Restore functions ===== */
+function change_is_delete_at_restore() {
+    config["is_delete_at_restore"] = document.getElementById('cb_restore_is_delete_tabmark').checked;
+}
+
 function open_tab_list() {
     var options = document.getElementById('sb_restore_tabmark_list').options;
     
@@ -127,7 +136,9 @@ function open_tab_list() {
                     active: false
                 });
             }
-            delete tabmark_list[tabmark_id];
+            if( config["is_delete_at_restore"] ) {
+                delete tabmark_list[tabmark_id];
+            }
         }
     }
     
@@ -136,6 +147,10 @@ function open_tab_list() {
 
 function update_restore_tabmark_list() {
     set_tabmark_list_for_select_box("sb_restore_tabmark_list");
+}
+
+function set_restore_is_delete_tabmark() {
+    document.getElementById('cb_restore_is_delete_tabmark').checked = config["is_delete_at_restore"];
 }
 
 /* ===== Edit functions ===== */
@@ -207,17 +222,33 @@ function set_tabmark_list_for_select_box( select_box_id ) {
     }
 }
 
+function get_config_data() {
+    return read_saved_data( "config" );
+}
+
+function save_config_data( json_data ) {
+    save_data( "config", json_data );
+}
+
 function get_tabmark_list() {
+    return read_saved_data( "tabmark" );
+}
+
+function save_tabmark_list( json_data ) {
+    save_data( "tabmark", json_data );
+}
+
+function read_saved_data( data_tag ) {
     try {
-        return JSON.parse( localStorage["tabmark"] );
+        return JSON.parse( localStorage[data_tag] );
     }
     catch(e) {
         return {};
     }
 }
 
-function save_tabmark_list( json_data ) {
-    localStorage["tabmark"] = JSON.stringify( json_data );
+function save_data( data_tag, json_data ) {
+    localStorage[data_tag] = JSON.stringify( json_data );
 }
 
 function clear_select_box( select_box_elem )

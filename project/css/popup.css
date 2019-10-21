@@ -116,6 +116,16 @@ button:hover {
     color: #fff;
 }
 
+input[type="checkbox"] {
+    margin-top: 6px;
+    vertical-align: middle;
+}
+
+.label_for_checkbox {
+    margin-top: 6px;
+    vertical-align: middle;
+}
+
 #it_save_new_tabmark {
     margin-top: 2px;
     width: 199px;
