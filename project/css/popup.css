@@ -116,6 +116,11 @@ button:hover {
     color: #fff;
 }
 
+button:disabled {
+    background: #777777;
+    color: #565656;
+}
+
 input[type="checkbox"] {
     margin-top: 6px;
     vertical-align: middle;

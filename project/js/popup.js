@@ -14,9 +14,10 @@ window.onload = function() {
     }
     page_activate_event = [event_activate_save, event_activate_restore, event_activate_edit];
     
+    document.getElementById('sb_save_tab_list').addEventListener('change', select_save_tab);
     document.getElementById('sb_save_target_tabgroup_list').addEventListener('change', select_save_tabgroup);
     document.getElementById('it_save_new_tabgroup').addEventListener('input', input_new_tabgroup);
-    document.getElementById('btn_save_tabs').addEventListener('click', add_tab_list);
+    document.getElementById('btn_save_tabs').addEventListener('click', save_tab_list);
     document.getElementById('cb_restore_is_delete_tabgroup').addEventListener('click', change_is_delete_at_restore);
     document.getElementById('btn_restore_open_tabs').addEventListener('click', open_tab_list);
     document.getElementById('sb_edit_tabgroup_list').addEventListener('change', select_edit_tabgroup);
@@ -43,6 +44,7 @@ function event_activate_save() {
     update_save_tab_list();
     update_save_target_tabgroup_list();
     document.getElementById('it_save_new_tabgroup').value = "";
+    update_save_button_state();
 }
 
 function event_activate_restore() {
@@ -57,7 +59,7 @@ function event_activate_edit() {
 }
 
 /* ===== Save functions ===== */
-function add_tab_list() {
+function save_tab_list() {
     /* Get save tab list */
     var options_tab_list = document.getElementById('sb_save_tab_list').options;
     var save_tab_ids = [];
@@ -92,12 +94,18 @@ function add_tab_list() {
     });
 }
 
+function select_save_tab() {
+    update_save_button_state();
+}
+
 function select_save_tabgroup() {
     document.getElementById('it_save_new_tabgroup').value = "";
+    update_save_button_state();
 }
 
 function input_new_tabgroup() {
     document.getElementById("sb_save_target_tabgroup_list").selectedIndex = -1;
+    update_save_button_state();
 }
 
 function update_save_tab_list() {
@@ -118,6 +126,21 @@ function update_save_target_tabgroup_list() {
     set_tabgroup_list_for_select_box("sb_save_target_tabgroup_list");
 }
 
+function update_save_button_state() {
+    document.getElementById('btn_save_tabs').disabled = !is_save_enable();
+}
+
+function is_save_enable() {
+    var rtn = false;
+    if( document.getElementById("sb_save_tab_list").selectedIndex != -1 ) {
+        if( ( document.getElementById("sb_save_target_tabgroup_list").selectedIndex != -1 ) 
+         || ( document.getElementById('it_save_new_tabgroup').value != "" ) ) {
+            rtn = true;
+        }
+    }
+    
+    return rtn;
+}
 /* ===== Restore functions ===== */
 function change_is_delete_at_restore() {
     config["is_delete_at_restore"] = document.getElementById('cb_restore_is_delete_tabgroup').checked;
