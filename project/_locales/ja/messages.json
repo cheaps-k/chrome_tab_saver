@@ -1,0 +1,20 @@
+{
+    "page_name_save": { "message": "保存" },
+    "page_name_restore": { "message": "復元" },
+    "page_name_edit": { "message": "編集" },
+
+    "save_page_select_tab": { "message": "保存するタブの選択" },
+    "save_page_select_tabgroup": { "message": "保存先タブグループの選択" },
+    "save_page_new_tabgroup": { "message": "新しい保存先" },
+    "save_page_save_button": { "message": "保存" },
+
+    "restore_page_select_tabgroup": { "message": "復元するタブグループの選択" },
+    "restore_page_check_is_delete_tabgroup": { "message": "復元時にタブグループを削除" },
+    "restore_page_restore_button": { "message": "復元" },
+
+    "edit_page_select_tabgroup": { "message": "編集するタブグループの選択" },
+    "edit_page_rename_tabgroup_button": { "message": "名前変更" },
+    "edit_page_delete_tabgroup_button": { "message": "削除" },
+    "edit_page_select_tab": { "message": "編集するタブの選択" },
+    "edit_page_delete_tab_button": { "message": "削除" }
+}

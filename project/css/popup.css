@@ -99,6 +99,7 @@ hr {
 button {
     position: relative;
     display: inline-block;
+    height: 23px;
     margin: 2px;
     float: right;
     width: 75px;
@@ -132,9 +133,14 @@ input[type="checkbox"] {
     vertical-align: middle;
 }
 
+#save_page_new_tabgroup {
+    margin-right: 4px;
+    margin-top: 3px;
+}
+
 #it_save_new_tabgroup {
     margin-top: 2px;
-    width: 199px;
+    width: 179px;
 }
 
 #it_edit_new_name {

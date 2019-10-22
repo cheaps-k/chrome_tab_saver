@@ -3,6 +3,8 @@ var tabgroup_list;
 var page_activate_event;
 
 window.onload = function() {
+    set_popup_string();
+    
     addEventListener("unload", function (event) {
         save_tabgroup_list(tabgroup_list);
         save_config_data(config);
@@ -34,6 +36,31 @@ window.onload = function() {
     config = get_config_data();
     event_activate_save();  // Default page is save.
 };
+
+function set_popup_string() {
+    set_element_string('page_name_save', 'page_name_save');
+    set_element_string('page_name_restore', 'page_name_restore');
+    set_element_string('page_name_edit', 'page_name_edit');
+
+    set_element_string('save_page_select_tab', 'save_page_select_tab');
+    set_element_string('save_page_select_tabgroup', 'save_page_select_tabgroup');
+    set_element_string('save_page_new_tabgroup', 'save_page_new_tabgroup');
+    set_element_string('btn_save_tabs', 'save_page_save_button');
+
+    set_element_string('restore_page_select_tabgroup', 'restore_page_select_tabgroup');
+    set_element_string('restore_page_check_is_delete_tabgroup', 'restore_page_check_is_delete_tabgroup');
+    set_element_string('btn_restore_open_tabs', 'restore_page_restore_button');
+
+    set_element_string('edit_page_select_tabgroup', 'edit_page_select_tabgroup');
+    set_element_string('btn_edit_delete_tabgroup', 'edit_page_delete_tabgroup_button');
+    set_element_string('btn_edit_rename_tabgroup', 'edit_page_rename_tabgroup_button');
+    set_element_string('edit_page_select_tab', 'edit_page_select_tab');
+    set_element_string('btn_edit_delete_tab', 'edit_page_delete_tab_button');
+}
+
+function set_element_string( element_id, message_id ) {
+    document.getElementById(element_id).innerHTML = chrome.i18n.getMessage(message_id);
+}
 
 /* ===== Page functions ===== */
 function change_page() {

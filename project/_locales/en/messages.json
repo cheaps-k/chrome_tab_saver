@@ -1,0 +1,20 @@
+{
+    "page_name_save": { "message": "SAVE" },
+    "page_name_restore": { "message": "RESTORE" },
+    "page_name_edit": { "message": "EDIT" },
+
+    "save_page_select_tab": { "message": "Select tab to save" },
+    "save_page_select_tabgroup": { "message": "Select destination tabgroup" },
+    "save_page_new_tabgroup": { "message": "New tabgroup" },
+    "save_page_save_button": { "message": "save" },
+
+    "restore_page_select_tabgroup": { "message": "Select tabgroup to restore" },
+    "restore_page_check_is_delete_tabgroup": { "message": "Delete tabgroup on restore" },
+    "restore_page_restore_button": { "message": "restore" },
+
+    "edit_page_select_tabgroup": { "message": "Select tabgroup to edit" },
+    "edit_page_rename_tabgroup_button": { "message": "rename" },
+    "edit_page_delete_tabgroup_button": { "message": "delete" },
+    "edit_page_select_tab": { "message": "Select tab to edit" },
+    "edit_page_delete_tab_button": { "message": "delete" }
+}
