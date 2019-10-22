@@ -1,4 +1,4 @@
-# chrome_tab_saver
+# chrome_tab_shelf
 ## 概要
 開いているタブをグルーピングして保存するChrome拡張機能です。
 
