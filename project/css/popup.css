@@ -1,0 +1,149 @@
+*:focus {
+    outline: none;
+}
+
+::selection {
+    background: #5ab4bd;
+    color: #fff;
+}
+
+body {
+    width: 300px;
+    height: 483px;
+    font-family: "Meiryo UI";
+    user-select: none;
+}
+
+/* タブ切り替え全体のスタイル */
+.tabs {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* タブのスタイル */
+.tab_item {
+    width: calc(100%/3);
+    height: 30px;
+    border-bottom: 3px solid #5ab4bd;
+    background-color: #d9d9d9;
+    line-height: 30px;
+    font-size: 16px;
+    text-align: center;
+    color: #565656;
+    display: block;
+    float: left;
+    text-align: center;
+    font-weight: bold;
+    transition: all 0.1s ease;
+}
+.tab_item:hover {
+    opacity: 0.9;
+}
+
+/* ラジオボタンを全て消す */
+input[name="tab_item"] {
+    display: none;
+}
+
+/* タブ切り替えの中身のスタイル */
+.tab_content {
+    display: none;
+    padding: 0px 15px;
+    clear: both;
+    overflow: hidden;
+    height: 450px;
+}
+
+/* 選択されているタブのコンテンツのみを表示 */
+#rd_save:checked ~ #save_content,
+#rd_restore:checked ~ #restore_content,
+#rd_edit:checked ~ #edit_content {
+    display: block;
+}
+
+/* 選択されているタブのスタイルを変える */
+.tabs input:checked + .tab_item {
+    background-color: #5ab4bd;
+    color: #fff;
+}
+
+select {
+    width: 100%;
+    height: 10em;
+}
+
+h1 {
+    font-size: 15px;
+    color: #fff;
+    position: relative;
+    padding: 0.6em;
+    background: #5ab4bd;
+}
+
+h1:after {
+    position: absolute;
+    content: '';
+    top: 100%;
+    left: 30px;
+    border: 10px solid transparent;
+    border-top: 10px solid #5ab4bd;
+    width: 0;
+    height: 0;
+}
+
+hr {
+    border-top: 1.5px dashed #5ab4bd;
+    border-bottom: 0px solid #5ab4bd;
+}
+
+button {
+    position: relative;
+    display: inline-block;
+    height: 23px;
+    margin: 2px;
+    float: right;
+    width: 75px;
+    font-weight: bold;
+    font-size: 13px;
+    border: solid 1px #5ab4bd;
+    text-decoration: none;
+    color: #565656;
+    background: #d9d9d9;
+    transition: .4s;
+}
+
+button:hover {
+    background: #5ab4bd;
+    color: #fff;
+}
+
+button:disabled {
+    background: #909090;
+    border: solid 1px #909090;
+    color: #565656;
+}
+
+input[type="checkbox"] {
+    margin-top: 6px;
+    vertical-align: middle;
+}
+
+.label_for_checkbox {
+    margin-top: 6px;
+    vertical-align: middle;
+}
+
+#save_page_new_tabgroup {
+    margin-right: 4px;
+    margin-top: 3px;
+}
+
+#it_save_new_tabgroup {
+    margin-top: 2px;
+    width: 179px;
+}
+
+#it_edit_new_name {
+    margin-top: 3px;
+    width: 110px;
+}
