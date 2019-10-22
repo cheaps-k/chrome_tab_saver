@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "Tab Saver",
+    "name": "Tab Shelf",
     "description": "Save and restore the opening tabs.",
     "version": "1.0.0",
     "default_locale": "en",
