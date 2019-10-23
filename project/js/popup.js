@@ -424,7 +424,7 @@ function get_new_id() {
     var hour = number_to_string_with_zero_pad(now.getHours(), 2);
     var min = number_to_string_with_zero_pad(now.getMinutes(), 2);
     var sec = number_to_string_with_zero_pad(now.getSeconds(), 2);
-    var msec = number_to_string_with_zero_pad(now.getMilliseconds(), 2);
+    var msec = number_to_string_with_zero_pad(now.getMilliseconds(), 3);
     
     return year + month + date + hour + min + sec + msec;
 }
