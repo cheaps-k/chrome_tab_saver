@@ -5,11 +5,6 @@ var page_activate_event;
 window.onload = function() {
     set_popup_string();
     
-    addEventListener("unload", function (event) {
-        save_tabgroup_list(tabgroup_list);
-        save_config_data(config);
-    }, true);
-    
     var pages = document.getElementsByName('tab_item');
     for( page_index = 0; page_index < pages.length; page_index++ ) {
         pages[page_index].addEventListener('change', change_page);
@@ -35,6 +30,11 @@ window.onload = function() {
     tabgroup_list = get_tabgroup_list();
     config = get_config_data();
     event_activate_save();  // Default page is save.
+};
+
+window.onunload = function () {
+    save_tabgroup_list(tabgroup_list);
+    save_config_data(config);
 };
 
 function set_popup_string() {
