@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Tab Shelf",
     "description": "Save and restore the opening tabs.",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "default_locale": "en",
     "icons": {
         "16": "icons/icon16.png",
