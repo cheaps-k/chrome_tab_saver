@@ -97,15 +97,18 @@ function save_tab_list() {
     /* Get save tab list */
     var elem_save_tab_list = document.getElementById('sb_save_tab_list');
     var options_tab_list = elem_save_tab_list.options;
+    var remaining_count = 0;
     var save_tab_ids = [];
     for( var i = 0; i < options_tab_list.length; i++ ) {
         if( options_tab_list[i].selected ) {
             save_tab_ids.push( Number( options_tab_list[i].value ) );
+        } else {
+            remaining_count++;
         }
     }
     
     /* If selected all tabs, open new tab */
-    if( elem_save_tab_list.options.length == 0 ) {
+    if( remaining_count == 0 ) {
         chrome.tabs.create({
             url: "chrome://newtab/",
             active: false
