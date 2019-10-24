@@ -165,6 +165,7 @@ function refresh_save_tab_list() {
         clear_select_box(elem_save_tab_list);
         for( var index = 0; index < tabs.length; index++ ) {
             var option = document.createElement("option");
+            option.title = tabs[index].title;
             option.text = tabs[index].title;
             option.value = tabs[index].id;
             elem_save_tab_list.appendChild(option);
@@ -324,6 +325,7 @@ function refresh_edit_tab_list() {
         var tab_data = gTabgroupList[select_tabgroup_id].data;
         for( var tab_index = 0; tab_index < tab_data.length; tab_index++ ) {
             var option = document.createElement("option");
+            option.title = tab_data[tab_index].name;
             option.text = tab_data[tab_index].name;
             option.value = tab_index;
             elem_edit_tab_list.appendChild(option);
@@ -389,6 +391,7 @@ function set_tabgroup_list_for_select_box( select_box_id ) {
     
     for( id in gTabgroupList ) {
         var option = document.createElement("option");
+        option.title = gTabgroupList[id].name;
         option.text = gTabgroupList[id].name;
         option.value = id;
         elem_select_box.appendChild(option);
