@@ -18,6 +18,7 @@ window.onload = function() {
     
     document.getElementById('sb_restore_tabgroup_list').addEventListener('change', select_restore_tabgroup);
     document.getElementById('cb_restore_is_delete_tabgroup').addEventListener('click', change_is_delete_on_restore);
+    document.getElementById('cb_restore_is_empty_tabgroup').addEventListener('click', change_is_empty_on_restore);
     document.getElementById('btn_restore_open_tabs').addEventListener('click', restore_tab_group);
     
     document.getElementById('sb_edit_tabgroup_list').addEventListener('change', select_edit_tabgroup);
@@ -49,6 +50,7 @@ function set_popup_string() {
 
     set_element_string('restore_page_select_tabgroup', 'restore_page_select_tabgroup');
     set_element_string('restore_page_check_is_delete_tabgroup', 'restore_page_check_is_delete_tabgroup');
+    set_element_string('restore_page_check_is_empty_tabgroup', 'restore_page_check_is_empty_tabgroup');
     set_element_string('btn_restore_open_tabs', 'restore_page_restore_button');
 
     set_element_string('edit_page_select_tabgroup', 'edit_page_select_tabgroup');
@@ -81,8 +83,9 @@ function refresh_save_page() {
 }
 
 function refresh_restore_page() {
-    refresh_is_delete_tabgroup_on_restore();
     refresh_restore_tabgroup_list();
+    refresh_is_delete_tabgroup_on_restore();
+    refresh_is_empty_tabgroup_on_restore();
     refresh_restore_button_state();
 }
 
@@ -200,6 +203,14 @@ function is_save_enable() {
 /* ===== Restore functions ===== */
 function change_is_delete_on_restore() {
     gConfig["is_delete_on_restore"] = document.getElementById('cb_restore_is_delete_tabgroup').checked;
+    
+    refresh_is_empty_tabgroup_on_restore();
+
+    store_all();
+}
+
+function change_is_empty_on_restore() {
+    gConfig["is_empty_on_restore"] = document.getElementById('cb_restore_is_empty_tabgroup').checked;
 
     store_all();
 }
@@ -219,6 +230,8 @@ function restore_tab_group() {
             }
             if( gConfig["is_delete_on_restore"] ) {
                 delete gTabgroupList[tabgroup_id];
+            } else if( gConfig["is_empty_on_restore"] ) {
+                gTabgroupList[tabgroup_id].data = [];
             }
         }
     }
@@ -237,11 +250,16 @@ function select_restore_tabgroup() {
 }
 
 function refresh_is_delete_tabgroup_on_restore() {
-    if( !( "is_delete_on_restore" in gConfig ) ) {
-        gConfig["is_delete_on_restore"] = true;
-        store_all();
-    }
     document.getElementById('cb_restore_is_delete_tabgroup').checked = gConfig["is_delete_on_restore"];
+}
+
+function refresh_is_empty_tabgroup_on_restore() {
+    var is_disable = false;
+    if( config_data["is_delete_on_restore"] == true ) {
+        is_disable = true;
+    }
+    document.getElementById('cb_restore_is_empty_tabgroup').disabled = is_disable;
+    document.getElementById('cb_restore_is_empty_tabgroup').checked = gConfig["is_empty_on_restore"];
 }
 
 function refresh_restore_button_state() {
@@ -404,7 +422,17 @@ function store_all() {
 }
 
 function get_config_data() {
-    return read_saved_data( "config" );
+    config_data = read_saved_data( "config" );
+    
+    if( !( "is_delete_on_restore" in config_data ) ) {
+        config_data["is_delete_on_restore"] = false;
+    }
+    if( !( "is_empty_on_restore" in config_data ) ) {
+        config_data["is_empty_on_restore"] = true;
+    }
+    store_all();
+    
+    return config_data;
 }
 
 function save_config_data() {
