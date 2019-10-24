@@ -134,6 +134,7 @@ function save_tab_list() {
                 }
             }
         }
+        store_all();
         
         /* Close tabs */
         chrome.tabs.remove(save_tab_ids, function () {
@@ -196,6 +197,8 @@ function is_save_enable() {
 /* ===== Restore functions ===== */
 function change_is_delete_at_restore() {
     config["is_delete_at_restore"] = document.getElementById('cb_restore_is_delete_tabgroup').checked;
+
+    store_all();
 }
 
 function open_tab_list() {
@@ -218,6 +221,8 @@ function open_tab_list() {
     }
     
     event_activate_restore();
+    
+    store_all();
 }
 
 function update_restore_tabgroup_list() {
@@ -233,6 +238,8 @@ function set_restore_is_delete_tabgroup() {
         config["is_delete_at_restore"] = true;
     }
     document.getElementById('cb_restore_is_delete_tabgroup').checked = config["is_delete_at_restore"];
+    
+    store_all();
 }
 
 function update_restore_button_state() {
@@ -274,6 +281,8 @@ function rename_tabgroup() {
     var rename_tabgroup_id = document.getElementById("sb_edit_tabgroup_list").value;
     tabgroup_list[rename_tabgroup_id].name = new_name;
     event_activate_edit();
+    
+    store_all();
 }
 
 function delete_tabgroup() {
@@ -281,6 +290,8 @@ function delete_tabgroup() {
     delete tabgroup_list[delete_tabgroup_id];
     update_edit_tabgroup_list();
     event_activate_edit();
+    
+    store_all();
 }
 
 function delet_tab() {
@@ -292,6 +303,8 @@ function delet_tab() {
         }
     }
     update_edit_tablist();
+    
+    store_all();
 }
 
 function update_edit_tabgroup_list() {
@@ -375,6 +388,11 @@ function set_tabgroup_list_for_select_box( select_box_id ) {
         option.value = id;
         select.appendChild(option);
     }
+}
+
+function store_all() {
+    save_tabgroup_list(tabgroup_list);
+    save_config_data(config);
 }
 
 function get_config_data() {
