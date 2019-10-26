@@ -1,4 +1,6 @@
 {
+    "description": { "message": "開きすぎたタブをグルーピングして整理しましょう！" },
+
     "page_name_save": { "message": "保存" },
     "page_name_restore": { "message": "復元" },
     "page_name_edit": { "message": "編集" },
