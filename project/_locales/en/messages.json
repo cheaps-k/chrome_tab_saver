@@ -1,4 +1,6 @@
 {
+    "description": { "message": "Let's group and organize too many tabs!!" },
+
     "page_name_save": { "message": "SAVE" },
     "page_name_restore": { "message": "RESTORE" },
     "page_name_edit": { "message": "EDIT" },
