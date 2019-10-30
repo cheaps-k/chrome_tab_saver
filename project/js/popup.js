@@ -22,6 +22,7 @@ window.onload = function() {
     document.getElementById('sb_restore_tabgroup_list').addEventListener('change', select_restore_tabgroup);
     document.getElementById('cb_restore_is_delete_tabgroup').addEventListener('click', change_is_delete_on_restore);
     document.getElementById('cb_restore_is_empty_tabgroup').addEventListener('click', change_is_empty_on_restore);
+    document.getElementById('cb_restore_is_open_new_window').addEventListener('click', change_is_open_new_window);
     document.getElementById('btn_restore_open_tabs').addEventListener('click', restore_tab_group);
     
     document.getElementById('sb_edit_tabgroup_list').addEventListener('change', select_edit_tabgroup);
@@ -56,6 +57,7 @@ function set_popup_string() {
     set_element_string('restore_page_select_tabgroup', 'restore_page_select_tabgroup');
     set_element_string('restore_page_check_is_delete_tabgroup', 'restore_page_check_is_delete_tabgroup');
     set_element_string('restore_page_check_is_empty_tabgroup', 'restore_page_check_is_empty_tabgroup');
+    set_element_string('restore_page_check_is_open_new_window', 'restore_page_check_is_open_new_window');
     set_element_string('btn_restore_open_tabs', 'restore_page_restore_button');
 
     set_element_string('edit_page_select_tabgroup', 'edit_page_select_tabgroup');
@@ -95,6 +97,7 @@ function refresh_restore_page() {
     refresh_restore_tabgroup_list();
     refresh_is_delete_tabgroup_on_restore();
     refresh_is_empty_tabgroup_on_restore();
+    refresh_is_open_new_window();
     refresh_restore_button_state();
 }
 
@@ -132,7 +135,7 @@ async function save_tab() {
     } else {
         /* 新規タブグループへの保存 */
         save_target_id = get_new_id();
-        gTabgroupList[save_target_id] = {name: new_tabgroup, data: []};
+        gTabgroupList[save_target_id] = { name: new_tabgroup, data: [] };
     }
     
     for( var index = 0; index < tabs.length; index++ ) {
@@ -143,7 +146,7 @@ async function save_tab() {
     
     /* If selected all tabs, open new tab */
     if( tabs.length == save_tab_ids.length ) {
-        await tab_open( "chrome://newtab/" );
+        await open_tab( "chrome://newtab/", chrome.windows.WINDOW_ID_CURRENT );
     }
     
     /* Close tabs */
@@ -239,18 +242,27 @@ function change_is_empty_on_restore() {
     event_end();
 }
 
-async function restore_tab_group() {
+function change_is_open_new_window() {
+    event_start();
+    
+    gConfig["is_open_new_window"] = document.getElementById('cb_restore_is_open_new_window').checked;
+    
+    event_end();
+}
+
+function restore_tab_group() {
     event_start();
     
     var elem_restore_tabgroup_list = document.getElementById('sb_restore_tabgroup_list');
+    var is_open_new_window = gConfig["is_open_new_window"];
     
     for( var i = 0; i < elem_restore_tabgroup_list.length; i++ ) {
         if( elem_restore_tabgroup_list[i].selected ) {
             var tabgroup_id = elem_restore_tabgroup_list[i].value;
-            var tab_list_data = gTabgroupList[tabgroup_id].data;
-            for( var data_index = 0; data_index < tab_list_data.length; data_index++ ) {
-                await tab_open( tab_list_data[data_index].url );
-            }
+            var tabgroup_data = gTabgroupList[tabgroup_id].data;
+            
+            open_tabs( tabgroup_data, is_open_new_window, true );
+            
             if( gConfig["is_delete_on_restore"] ) {
                 delete gTabgroupList[tabgroup_id];
             } else if( gConfig["is_empty_on_restore"] ) {
@@ -262,6 +274,23 @@ async function restore_tab_group() {
     refresh_restore_page();
     
     event_end();
+}
+
+async function open_tabs( tabgroup_data, is_open_new_window, is_open_last_pos ) {
+    var window_id;
+    
+    if( tabgroup_data.length > 0 ) {
+        if( is_open_new_window ) {
+            window_id = await open_window( tabgroup_data[0].url );
+            tabgroup_data = tabgroup_data.slice( 1 );   // ウィンドウを開くときに1つ目のタブは開くため、削除する
+        } else {
+            window_id = chrome.windows.WINDOW_ID_CURRENT;
+        }
+        
+        for( var data_index = 0; data_index < tabgroup_data.length; data_index++ ) {
+            await open_tab( tabgroup_data[data_index].url, window_id );
+        }
+    }
 }
 
 function refresh_restore_tabgroup_list() {
@@ -287,6 +316,10 @@ function refresh_is_empty_tabgroup_on_restore() {
     }
     document.getElementById('cb_restore_is_empty_tabgroup').disabled = is_disable;
     document.getElementById('cb_restore_is_empty_tabgroup').checked = gConfig["is_empty_on_restore"];
+}
+
+function refresh_is_open_new_window() {
+    document.getElementById('cb_restore_is_open_new_window').checked = gConfig["is_open_new_window"];
 }
 
 function refresh_restore_button_state() {
@@ -477,9 +510,18 @@ async function close_tabs( tab_ids ) {
     });
 }
 
-async function tab_open( new_url ) {
+async function open_window( new_url ) {
+    return new Promise ( function( resolve, reject ) {
+        chrome.windows.create( { url: new_url }, function ( window ) {
+            resolve( window.id );
+        });
+    });
+}
+
+async function open_tab( new_url, target_window_id ) {
     return new Promise ( function( resolve, reject ) {
         chrome.tabs.create({
+            windowId: target_window_id,
             url: new_url,
             active: false
         });
@@ -514,6 +556,9 @@ function get_config_data() {
     }
     if( !( "is_empty_on_restore" in config_data ) ) {
         config_data["is_empty_on_restore"] = true;
+    }
+    if( !( "is_open_new_window" in config_data ) ) {
+        config_data["is_open_new_window"] = false;
     }
     
     return config_data;

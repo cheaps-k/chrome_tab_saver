@@ -13,6 +13,7 @@
     "restore_page_select_tabgroup": { "message": "Select tabgroup to restore" },
     "restore_page_check_is_delete_tabgroup": { "message": "Delete tabgroup on restore" },
     "restore_page_check_is_empty_tabgroup": { "message": "Empty tabgroup on restore" },
+    "restore_page_check_is_open_new_window": { "message": "Restore to new window" },
     "restore_page_restore_button": { "message": "restore" },
 
     "edit_page_select_tabgroup": { "message": "Select tabgroup to edit" },
