@@ -1,14 +1,17 @@
 const REFRESH_PAGE_FUNCTIONS = [refresh_save_page, refresh_restore_page, refresh_edit_page];
+const MESSAGE_OPENED_POPUP = "tab_shelf-opened_popup"
 
 var gConfig;
 var gTabgroupList;
 
 window.onload = function() {
+    chrome.runtime.sendMessage( chrome.runtime.id, { message: MESSAGE_OPENED_POPUP } );
+    
     set_popup_string();
     
     var pages = document.getElementsByName('tab_item');
     for( page_index = 0; page_index < pages.length; page_index++ ) {
-        pages[page_index].addEventListener('change', change_page);
+        pages[page_index].addEventListener('change', refresh_page);
     }
     
     document.getElementById('sb_save_tab_list').addEventListener('change', select_save_tab);
@@ -27,15 +30,17 @@ window.onload = function() {
     document.getElementById('btn_edit_delete_tabgroup').addEventListener('click', delete_tabgroup);
     document.getElementById('sb_edit_tab_list').addEventListener('change', select_edit_tab);
     document.getElementById('btn_edit_delete_tab').addEventListener('click', delet_tab);
-
-    gTabgroupList = get_tabgroup_list();
-    gConfig = get_config_data();
-    refresh_save_page();  // Default page is save.
-};
-
-window.onunload = function () {
-    save_tabgroup_list();
-    save_config_data();
+    
+    refresh_page();
+    
+    // 他のウィンドウでpopupが開かれたらウィンドウを閉じる
+    chrome.runtime.onMessage.addListener( function( request, sender, callback ) {
+        if( request.message === MESSAGE_OPENED_POPUP ) {
+            window.close();
+        }
+        
+        return true;
+    });
 };
 
 function set_popup_string() {
@@ -65,7 +70,9 @@ function set_element_string( element_id, message_id ) {
 }
 
 /* ===== Page functions ===== */
-function change_page() {
+function refresh_page() {
+    event_start();
+    
     var pages = document.getElementsByName('tab_item');
     for( page_index = 0; page_index < pages.length; page_index++ ) {
         if( pages[page_index].checked ) {
@@ -73,6 +80,8 @@ function change_page() {
             break;
         }
     }
+    
+    event_end();
 }
 
 function refresh_save_page() {
@@ -98,6 +107,8 @@ function refresh_edit_page() {
 
 /* ===== Save functions ===== */
 function save_tab() {
+    event_start();
+    
     /* Get tab list to save */
     var elem_save_tab_list = document.getElementById('sb_save_tab_list');
     var options_tab_list = elem_save_tab_list.options;
@@ -128,7 +139,6 @@ function save_tab() {
                 gTabgroupList[save_target_id].data.push({ name: tabs[index].title, url: tabs[index].url });
             }
         }
-        store_all();
         
         /* If selected all tabs, open new tab */
         if( tabs.length == save_tab_ids.length ) {
@@ -142,23 +152,37 @@ function save_tab() {
         chrome.tabs.remove(save_tab_ids, function () {
             setTimeout( function() {    // タブを閉じた直後だとタブが存在するように見えるため、100msウェイトを入れる
                 refresh_save_page();
+                
+                event_end();
             }, 100 );
         });
     });
 }
 
 function select_save_tab() {
+    event_start();
+    
     refresh_save_button_state();
+    
+    event_end();
 }
 
 function select_save_target_tabgroup() {
+    event_start();
+    
     refresh_new_tabgroup_name_to_save();
     refresh_save_button_state();
+    
+    event_end();
 }
 
 function input_new_tabgroup_name_to_save() {
+    event_start();
+    
     refresh_save_target_tabgroup_list();
     refresh_save_button_state();
+    
+    event_end();
 }
 
 function refresh_save_tab_list() {
@@ -202,20 +226,26 @@ function is_save_enable() {
 
 /* ===== Restore functions ===== */
 function change_is_delete_on_restore() {
+    event_start();
+    
     gConfig["is_delete_on_restore"] = document.getElementById('cb_restore_is_delete_tabgroup').checked;
     
     refresh_is_empty_tabgroup_on_restore();
-
-    store_all();
+    
+    event_end();
 }
 
 function change_is_empty_on_restore() {
+    event_start();
+    
     gConfig["is_empty_on_restore"] = document.getElementById('cb_restore_is_empty_tabgroup').checked;
-
-    store_all();
+    
+    event_end();
 }
 
 function restore_tab_group() {
+    event_start();
+    
     var elem_restore_tabgroup_list = document.getElementById('sb_restore_tabgroup_list');
     
     for( var i = 0; i < elem_restore_tabgroup_list.length; i++ ) {
@@ -238,7 +268,7 @@ function restore_tab_group() {
     
     refresh_restore_page();
     
-    store_all();
+    event_end();
 }
 
 function refresh_restore_tabgroup_list() {
@@ -246,7 +276,11 @@ function refresh_restore_tabgroup_list() {
 }
 
 function select_restore_tabgroup() {
+    event_start();
+    
     refresh_restore_button_state();
+    
+    event_end();
 }
 
 function refresh_is_delete_tabgroup_on_restore() {
@@ -278,6 +312,8 @@ function is_restore_enable() {
 
 /* ===== Edit functions ===== */
 function select_edit_tabgroup() {
+    event_start();
+    
     var tabgroup_list = document.getElementById("sb_edit_tabgroup_list");
     var select_tabgroup_name = tabgroup_list.options[tabgroup_list.selectedIndex].text;
     
@@ -285,34 +321,50 @@ function select_edit_tabgroup() {
     
     refresh_edit_tab_list();
     refresh_edit_buttons();
+    
+    event_end();
 }
 
 function select_edit_tab() {
+    event_start();
+    
     refresh_edit_buttons();
+    
+    event_end();
 }
 
 function input_new_tabgroup_name_to_rename() {
+    event_start();
+    
     refresh_edit_buttons();
+    
+    event_end();
 }
 
 function rename_tabgroup() {
+    event_start();
+    
     var new_name = document.getElementById("it_edit_new_name").value;
     var rename_tabgroup_id = document.getElementById("sb_edit_tabgroup_list").value;
     gTabgroupList[rename_tabgroup_id].name = new_name;
     refresh_edit_page();
     
-    store_all();
+    event_end();
 }
 
 function delete_tabgroup() {
+    event_start();
+    
     var delete_tabgroup_id = document.getElementById("sb_edit_tabgroup_list").value;
     delete gTabgroupList[delete_tabgroup_id];
     refresh_edit_page();
     
-    store_all();
+    event_end();
 }
 
 function delet_tab() {
+    event_start();
+    
     var delete_tabgroup_id = document.getElementById("sb_edit_tabgroup_list").value;
     var options_delete_tab_list = document.getElementById('sb_edit_tab_list').options;
     for( var i = options_delete_tab_list.length - 1; i >= 0; i-- ) {   // 配列要素を削除していくので、後ろからサーチする
@@ -322,7 +374,7 @@ function delet_tab() {
     }
     refresh_edit_tab_list();
     
-    store_all();
+    event_end();
 }
 
 function refresh_edit_tabgroup_list() {
@@ -416,9 +468,22 @@ function set_tabgroup_list_for_select_box( select_box_id ) {
     }
 }
 
-function store_all() {
+function event_start() {
+    load_all_nvdata();
+}
+
+function event_end() {
+    save_all_nvdata();
+}
+
+function save_all_nvdata() {
     save_tabgroup_list();
     save_config_data();
+}
+
+function load_all_nvdata() {
+    gTabgroupList = get_tabgroup_list();
+    gConfig = get_config_data();
 }
 
 function get_config_data() {
@@ -430,7 +495,6 @@ function get_config_data() {
     if( !( "is_empty_on_restore" in config_data ) ) {
         config_data["is_empty_on_restore"] = true;
     }
-    store_all();
     
     return config_data;
 }
