@@ -147,6 +147,7 @@ async function save_tab() {
     }
     
     /* Close tabs */
+    save_all_nvdata();      // タブを閉じたときにpopupが閉じる可能性があるので、事前にデータを保存しておく
     await close_tabs( save_tab_ids );
     
     // タブを閉じた直後に更新するとタブが残っているように見えるため、100msウェイトを入れる
