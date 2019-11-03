@@ -1,5 +1,8 @@
 const REFRESH_PAGE_FUNCTIONS = [refresh_save_page, refresh_restore_page, refresh_edit_page];
-const MESSAGE_OPENED_POPUP = "tab_shelf-opened_popup"
+const MESSAGE_OPENED_POPUP = "tab_shelf-opened_popup";
+
+const RESTORE_TO_ID_CURRENT_WINDOW_LAST = 0;
+const RESTORE_TO_ID_NEW_WINDOW = 1;
 
 var gConfig;
 var gTabgroupList;
@@ -22,7 +25,8 @@ window.onload = function() {
     document.getElementById('sb_restore_tabgroup_list').addEventListener('change', select_restore_tabgroup);
     document.getElementById('cb_restore_is_delete_tabgroup').addEventListener('click', change_is_delete_on_restore);
     document.getElementById('cb_restore_is_empty_tabgroup').addEventListener('click', change_is_empty_on_restore);
-    document.getElementById('cb_restore_is_open_new_window').addEventListener('click', change_is_open_new_window);
+    document.getElementById('rb_restore_current_window_last').addEventListener('click', change_restore_to);
+    document.getElementById('rb_restore_new_window').addEventListener('click', change_restore_to);
     document.getElementById('btn_restore_open_tabs').addEventListener('click', restore_tab_group);
     
     document.getElementById('sb_edit_tabgroup_list').addEventListener('change', select_edit_tabgroup);
@@ -57,7 +61,8 @@ function set_popup_string() {
     set_element_string('restore_page_select_tabgroup', 'restore_page_select_tabgroup');
     set_element_string('restore_page_check_is_delete_tabgroup', 'restore_page_check_is_delete_tabgroup');
     set_element_string('restore_page_check_is_empty_tabgroup', 'restore_page_check_is_empty_tabgroup');
-    set_element_string('restore_page_check_is_open_new_window', 'restore_page_check_is_open_new_window');
+    set_element_string('restore_page_rb_restore_to_current_window_last', 'restore_page_radio_open_current_window_last');
+    set_element_string('restore_page_rb_restore_to_new_window', 'restore_page_radio_open_new_window');
     set_element_string('btn_restore_open_tabs', 'restore_page_restore_button');
 
     set_element_string('edit_page_select_tabgroup', 'edit_page_select_tabgroup');
@@ -97,7 +102,7 @@ function refresh_restore_page() {
     refresh_restore_tabgroup_list();
     refresh_is_delete_tabgroup_on_restore();
     refresh_is_empty_tabgroup_on_restore();
-    refresh_is_open_new_window();
+    refresh_restore_to();
     refresh_restore_button_state();
 }
 
@@ -242,10 +247,14 @@ function change_is_empty_on_restore() {
     event_end();
 }
 
-function change_is_open_new_window() {
+function change_restore_to() {
     event_start();
     
-    gConfig["is_open_new_window"] = document.getElementById('cb_restore_is_open_new_window').checked;
+    if( document.getElementById('rb_restore_current_window_last').checked ) {
+        gConfig["restore_to"] = RESTORE_TO_ID_CURRENT_WINDOW_LAST;
+    } else if ( document.getElementById('rb_restore_new_window').checked ) {
+        gConfig["restore_to"] = RESTORE_TO_ID_NEW_WINDOW;
+    }
     
     event_end();
 }
@@ -254,7 +263,13 @@ function restore_tab_group() {
     event_start();
     
     var elem_restore_tabgroup_list = document.getElementById('sb_restore_tabgroup_list');
-    var is_open_new_window = gConfig["is_open_new_window"];
+    var is_popup_close = false;
+    
+    var is_open_new_window = false;
+    if( gConfig["restore_to"] == RESTORE_TO_ID_NEW_WINDOW ) { 
+        is_open_new_window = true;
+        is_popup_close = true;
+    }
     
     for( var i = 0; i < elem_restore_tabgroup_list.length; i++ ) {
         if( elem_restore_tabgroup_list[i].selected ) {
@@ -274,6 +289,10 @@ function restore_tab_group() {
     refresh_restore_page();
     
     event_end();
+    
+    if( is_popup_close ) {
+        window.close();
+    }
 }
 
 async function open_tabs( tabgroup_data, is_open_new_window, is_open_last_pos ) {
@@ -311,15 +330,19 @@ function refresh_is_delete_tabgroup_on_restore() {
 
 function refresh_is_empty_tabgroup_on_restore() {
     var is_disable = false;
-    if( config_data["is_delete_on_restore"] == true ) {
+    if( gConfig["is_delete_on_restore"] == true ) {
         is_disable = true;
     }
     document.getElementById('cb_restore_is_empty_tabgroup').disabled = is_disable;
     document.getElementById('cb_restore_is_empty_tabgroup').checked = gConfig["is_empty_on_restore"];
 }
 
-function refresh_is_open_new_window() {
-    document.getElementById('cb_restore_is_open_new_window').checked = gConfig["is_open_new_window"];
+function refresh_restore_to() {
+    if( gConfig["restore_to"] == RESTORE_TO_ID_CURRENT_WINDOW_LAST ) {
+        document.getElementById('rb_restore_current_window_last').checked = true;
+    } else if( gConfig["restore_to"] == RESTORE_TO_ID_NEW_WINDOW ) {
+        document.getElementById('rb_restore_new_window').checked = true;
+    }
 }
 
 function refresh_restore_button_state() {
@@ -549,7 +572,7 @@ function load_all_nvdata() {
 }
 
 function get_config_data() {
-    config_data = read_saved_data( "config" );
+    var config_data = read_saved_data( "config" );
     
     if( !( "is_delete_on_restore" in config_data ) ) {
         config_data["is_delete_on_restore"] = false;
@@ -557,8 +580,8 @@ function get_config_data() {
     if( !( "is_empty_on_restore" in config_data ) ) {
         config_data["is_empty_on_restore"] = true;
     }
-    if( !( "is_open_new_window" in config_data ) ) {
-        config_data["is_open_new_window"] = false;
+    if( !( "restore_to" in config_data ) ) {
+        config_data["restore_to"] = RESTORE_TO_ID_CURRENT_WINDOW_LAST;
     }
     
     return config_data;

@@ -13,7 +13,8 @@
     "restore_page_select_tabgroup": { "message": "復元するタブグループの選択" },
     "restore_page_check_is_delete_tabgroup": { "message": "復元時にタブグループを削除" },
     "restore_page_check_is_empty_tabgroup": { "message": "復元時にタブグループを空にする" },
-    "restore_page_check_is_open_new_window": { "message": "新しいウィンドウに復元" },
+    "restore_page_radio_open_current_window_last": { "message": "一番右に復元" },
+    "restore_page_radio_open_new_window": { "message": "新しいウィンドウに復元" },
     "restore_page_restore_button": { "message": "復元" },
 
     "edit_page_select_tabgroup": { "message": "編集するタブグループの選択" },
