@@ -7,6 +7,8 @@ const RESTORE_TO_ID_NEW_WINDOW = 1;
 var gConfig;
 var gTabgroupList;
 
+var gListLastClickRow;
+
 window.onload = function() {
     chrome.runtime.sendMessage( chrome.runtime.id, { message: MESSAGE_OPENED_POPUP } );
     
@@ -17,7 +19,6 @@ window.onload = function() {
         pages[page_index].addEventListener('change', refresh_page);
     }
     
-    document.getElementById('sb_save_tab_list').addEventListener('change', select_save_tab);
     document.getElementById('sb_save_target_tabgroup_list').addEventListener('change', select_save_target_tabgroup);
     document.getElementById('it_save_new_tabgroup').addEventListener('input', input_new_tabgroup_name_to_save);
     document.getElementById('btn_save_tabs').addEventListener('click', save_tab);
@@ -118,12 +119,11 @@ async function save_tab() {
     event_start();
     
     /* Get tab list to save */
-    var elem_save_tab_list = document.getElementById('sb_save_tab_list');
-    var options_tab_list = elem_save_tab_list.options;
     var save_tab_ids = [];
-    for( var i = 0; i < options_tab_list.length; i++ ) {
-        if( options_tab_list[i].selected ) {
-            save_tab_ids.push( Number( options_tab_list[i].value ) );
+    var rows = document.getElementById("tbl_save_tab_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    for( i = 0; i < rows.length; i++ ) {
+        if( rows[i].getElementsByTagName("input")[0].checked ) {
+            save_tab_ids.push( Number( rows[i].getElementsByClassName("tab_id_cell")[0].innerHTML ) );
         }
     }
     
@@ -192,15 +192,30 @@ function input_new_tabgroup_name_to_save() {
 
 async function refresh_save_tab_list() {
     var tabs = await get_opening_tabs();
-    var elem_save_tab_list = document.getElementById("sb_save_tab_list");
-    
-    clear_select_box(elem_save_tab_list);
+    var table_body = document.getElementById("tbl_save_tab_list").getElementsByTagName("tbody")[0];
+    var row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'favcon_cell', value: '' }, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'tab_id_cell', value: ''}];
+
+    table_body.innerHTML = "";
     for( var index = 0; index < tabs.length; index++ ) {
-        var option = document.createElement("option");
-        option.title = tabs[index].title;
-        option.text = tabs[index].title;
-        option.value = tabs[index].id;
-        elem_save_tab_list.appendChild(option);
+        if( tabs[index].favIconUrl ) {
+            row_data[1].value = `<img src="${tabs[index].favIconUrl}" class="favcon">`;
+        } else {
+            row_data[1].value = "";
+        }
+        row_data[2].value = tabs[index].title;
+        row_data[3].value = String( index );
+        row_data[4].value = tabs[index].id;
+        
+        table_body.innerHTML += make_table_row( tabs[index].title, row_data );
+    }
+    register_event_to_save_tab_list();
+    gListLastClickRow = -1;
+}
+
+function register_event_to_save_tab_list() {
+    var rows = document.getElementById("tbl_save_tab_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    for( i = 0; i < rows.length; i++ ) {
+        rows[i].addEventListener('click', function(e) { list_selected(this, e, "tbl_save_tab_list");});
     }
 }
 
@@ -218,7 +233,17 @@ function refresh_save_button_state() {
 
 function is_save_enable() {
     var rtn = false;
-    if( document.getElementById("sb_save_tab_list").selectedIndex != -1 ) {
+    
+    var is_select_save_tab = false;
+    var is_selects = document.getElementById("tbl_save_tab_list").getElementsByTagName("input");
+    for( i = 0; i < is_selects.length; i++ ) {
+        if( is_selects[i].checked ) {
+            is_select_save_tab = true;
+            break;
+        }
+    }
+    
+    if( is_select_save_tab ) {
         if( ( document.getElementById("sb_save_target_tabgroup_list").selectedIndex != -1 ) 
          || ( document.getElementById('it_save_new_tabgroup').value != "" ) ) {
             rtn = true;
@@ -551,6 +576,70 @@ async function open_tab( new_url, target_window_id ) {
         
         resolve();
     });
+}
+
+function make_table_row( row_title, row_data ) {
+    var table_row = `<tr title="${row_title}">`;
+    for( index = 0; index < row_data.length; index++ ) {
+        table_row += `<td class="${row_data[index].class}">${row_data[index].value}</td>`
+    }
+    table_row += "</tr>";
+    
+    return table_row;
+}
+
+function list_selected( row, e, table_id ){
+    event_start();
+    
+    var rows = document.getElementById(table_id).getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    if( e.target.type == "checkbox" ) {
+        set_click_row( row, row.getElementsByTagName("input")[0].checked );
+    } else if( e.toElement.className == "checkbox_cell" ) {
+        var new_state = !row.getElementsByTagName("input")[0].checked;
+        row.getElementsByTagName("input")[0].checked = new_state;
+        set_click_row( row, new_state );
+    } else {
+        if( e.ctrlKey ) {
+            var new_state = !row.getElementsByTagName("input")[0].checked;
+            row.getElementsByTagName("input")[0].checked = new_state;
+            set_click_row( row, new_state );
+        } else if( e.shiftKey && gListLastClickRow != -1) {
+            var click_row = row.getElementsByClassName("row_cell")[0].innerHTML;
+            for( i = Math.min( click_row, gListLastClickRow ); i <= Math.max( click_row, gListLastClickRow ); i++ ) {
+                rows[i].getElementsByTagName("input")[0].checked = true;
+            }
+        } else {
+            for (i = 0; i < rows.length; i++) {
+                rows[i].getElementsByTagName("input")[0].checked = false;
+            }
+            row.getElementsByTagName("input")[0].checked = true;
+            
+            set_click_row( row, true );
+        }
+    }
+    reflesh_list_color( rows );
+    refresh_save_button_state();
+    
+    event_end();
+}
+
+function set_click_row( row, is_enable ) {
+    if( is_enable ) {
+        gListLastClickRow = row.getElementsByClassName("row_cell")[0].innerHTML;
+    } else {
+        gListLastClickRow = -1;
+    }
+}
+
+function reflesh_list_color( rows ) {
+    for( i = 0; i < rows.length; i++ ) {
+        var row = rows[i];
+        if( row.getElementsByTagName("input")[0].checked ) {
+            row.style.backgroundColor = "#5ab4bd";
+        } else {
+            row.style.backgroundColor = "#FFFFFF";
+        }
+    }
 }
 
 function event_start() {

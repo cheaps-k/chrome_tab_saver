@@ -7,7 +7,7 @@
     color: #fff;
 }
 
-body {
+body, table {
     width: 300px;
     height: auto;
     font-family: "Meiryo UI";
@@ -52,7 +52,7 @@ input[name="tab_item"] {
     padding: 0px 15px 5px;
     clear: both;
     overflow: hidden;
-    height: 450px;
+    height: 460px;
 }
 
 /* 選択されているタブのコンテンツのみを表示 */
@@ -132,6 +132,48 @@ input[type="checkbox"] {
 .label_for_checkbox {
     margin-top: 6px;
     vertical-align: middle;
+}
+
+.list {
+    width: 100%;
+    height: 12em;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: solid 1px #B0B0B0;
+}
+
+.list_table {
+    width: 100%;
+    border-spacing: 0px 1px;
+    table-layout: fixed;
+}
+
+.list_table_col_checkbox {
+    width: 20px;
+}
+
+.list_table_col_favcon {
+    width: 14px;
+}
+
+.list_table_col_row, .list_table_col_tab_id {
+    display: none;
+}
+
+.list_table td {
+    height: 14px;
+    white-space: nowrap;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.list_table .row_cell, .list_table .tab_id_cell {
+    display: none;
+}
+
+.favcon {
+    width: 100%;
+    height: 100%;
 }
 
 #save_page_new_tabgroup {
