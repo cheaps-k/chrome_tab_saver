@@ -4,17 +4,17 @@ const MESSAGE_OPENED_POPUP = "tab_shelf-opened_popup";
 const RESTORE_TO_ID_CURRENT_WINDOW_LAST = 0;
 const RESTORE_TO_ID_NEW_WINDOW = 1;
 
-var gConfig;
-var gTabgroupList;
+let gConfig;
+let gTabgroupList;
 
-var gListLastClick = { list: "", row: 0 };
+let gListLastClick = { list: "", row: 0 };
 
-window.onload = function() {
+window.onload = () => {
     chrome.runtime.sendMessage( chrome.runtime.id, { message: MESSAGE_OPENED_POPUP } );
     
     set_popup_string();
     
-    var pages = document.getElementsByName('tab_item');
+    let pages = document.getElementsByName('tab_item');
     for( page_index = 0; page_index < pages.length; page_index++ ) {
         pages[page_index].addEventListener('change', refresh_page);
     }
@@ -36,7 +36,7 @@ window.onload = function() {
     refresh_page();
     
     // 他のウィンドウでpopupが開かれたらウィンドウを閉じる
-    chrome.runtime.onMessage.addListener( function( request, sender, callback ) {
+    chrome.runtime.onMessage.addListener( ( request, sender, callback ) => {
         if( request.message === MESSAGE_OPENED_POPUP ) {
             window.close();
         }
@@ -77,7 +77,7 @@ function set_element_string( element_id, message_id ) {
 function refresh_page() {
     event_start();
     
-    var pages = document.getElementsByName('tab_item');
+    let pages = document.getElementsByName('tab_item');
     for( page_index = 0; page_index < pages.length; page_index++ ) {
         if( pages[page_index].checked ) {
             REFRESH_PAGE_FUNCTIONS[page_index]();
@@ -115,8 +115,8 @@ async function save_tab() {
     event_start();
     
     /* Get tab list to save */
-    var save_tab_ids = [];
-    var rows = document.getElementById("tbl_save_tab_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    let save_tab_ids = [];
+    let rows = document.getElementById("tbl_save_tab_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     for( i = 0; i < rows.length; i++ ) {
         if( rows[i].getElementsByTagName("input")[0].checked ) {
             save_tab_ids.push( Number( rows[i].getElementsByClassName("id_cell")[0].innerHTML ) );
@@ -124,15 +124,15 @@ async function save_tab() {
     }
     
     /* Save tabs */
-    var save_target_id;
-    var new_tabgroup;
+    let save_target_id;
+    let new_tabgroup;
     
-    var tabs = await get_opening_tabs();
+    let tabs = await get_opening_tabs();
     
     new_tabgroup = document.getElementById('it_save_new_tabgroup').value;
     if( new_tabgroup == "" ) {
         /* 既存タブグループへの保存 */
-        var rows = document.getElementById("tbl_save_target_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+        let rows = document.getElementById("tbl_save_target_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
         for( i = 0; i < rows.length; i++ ) {
             if( rows[i].getElementsByTagName("input")[0].checked ) {
                 save_target_id = rows[i].getElementsByClassName("id_cell")[0].innerHTML;
@@ -145,7 +145,7 @@ async function save_tab() {
         gTabgroupList[save_target_id] = { name: new_tabgroup, data: [] };
     }
     
-    for( var index = 0; index < tabs.length; index++ ) {
+    for( let index = 0; index < tabs.length; index++ ) {
         if( save_tab_ids.indexOf( tabs[index].id ) != -1 ) {
             gTabgroupList[save_target_id].data.push({ name: tabs[index].title, url: tabs[index].url, fav_icon: tabs[index].favIconUrl });
         }
@@ -161,7 +161,7 @@ async function save_tab() {
     await close_tabs( save_tab_ids );
     
     // タブを閉じた直後に更新するとタブが残っているように見えるため、100msウェイトを入れる
-    setTimeout( function() { refresh_save_page(); }, 100 );
+    setTimeout( () => { refresh_save_page(); }, 100 );
     
     event_end();
 }
@@ -176,14 +176,14 @@ function input_new_tabgroup_name_to_save() {
 }
 
 async function refresh_save_tab_list() {
-    var table_id = "tbl_save_tab_list";
+    let table_id = "tbl_save_tab_list";
     
-    var tabs = await get_opening_tabs();
-    var table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
-    var row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'fav_icon_cell', value: '' }, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
+    let tabs = await get_opening_tabs();
+    let table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
+    let row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'fav_icon_cell', value: '' }, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
 
     table_body.innerHTML = "";
-    for( var index = 0; index < tabs.length; index++ ) {
+    for( let index = 0; index < tabs.length; index++ ) {
         if( tabs[index].favIconUrl ) {
             row_data[1].value = `<img src="${tabs[index].favIconUrl}" class="fav_icon">`;
         } else {
@@ -203,7 +203,7 @@ async function refresh_save_tab_list() {
 }
 
 function register_event_to_save_tab_list() {
-    var rows = document.getElementById("tbl_save_tab_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    let rows = document.getElementById("tbl_save_tab_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     for( i = 0; i < rows.length; i++ ) {
         rows[i].addEventListener('click', select_save_tab_list);
     }
@@ -219,13 +219,13 @@ function select_save_tab_list(e) {
 }
 
 function refresh_save_target_tabgroup_list() {
-    var table_id = "tbl_save_target_tabgroup_list";
+    let table_id = "tbl_save_target_tabgroup_list";
     
-    var table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
-    var row_data = [{ class: 'radiobutton_cell', value: '<input type="radio" name="rd_save_target_tabgroup">'}, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
+    let table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
+    let row_data = [{ class: 'radiobutton_cell', value: '<input type="radio" name="rd_save_target_tabgroup">'}, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
 
     table_body.innerHTML = "";
-    var counter = 0;
+    let counter = 0;
     for( id in gTabgroupList ) {
         row_data[1].value = gTabgroupList[id].name;
         row_data[2].value = String( counter );
@@ -243,7 +243,7 @@ function refresh_save_target_tabgroup_list() {
 }
 
 function register_event_to_save_target_tabgroup_list() {
-    var rows = document.getElementById("tbl_save_target_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    let rows = document.getElementById("tbl_save_target_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     for( i = 0; i < rows.length; i++ ) {
         rows[i].addEventListener('click', select_save_target_tabgroup_list);
     }
@@ -268,10 +268,10 @@ function refresh_save_button_state() {
 }
 
 function is_save_enable() {
-    var rtn = false;
+    let rtn = false;
     
-    var is_select_save_tab = false;
-    var save_tab_selects = document.getElementById("tbl_save_tab_list").getElementsByTagName("input");
+    let is_select_save_tab = false;
+    let save_tab_selects = document.getElementById("tbl_save_tab_list").getElementsByTagName("input");
     for( i = 0; i < save_tab_selects.length; i++ ) {
         if( save_tab_selects[i].checked ) {
             is_select_save_tab = true;
@@ -280,8 +280,8 @@ function is_save_enable() {
     }
     
     if( is_select_save_tab ) {
-        var is_select_save_target_tabgroup = false;
-        var save_target_tabgroup_selects = document.getElementById("tbl_save_target_tabgroup_list").getElementsByTagName("input");
+        let is_select_save_target_tabgroup = false;
+        let save_target_tabgroup_selects = document.getElementById("tbl_save_target_tabgroup_list").getElementsByTagName("input");
         for( i = 0; i < save_target_tabgroup_selects.length; i++ ) {
             if( save_target_tabgroup_selects[i].checked ) {
                 is_select_save_target_tabgroup = true;
@@ -332,18 +332,18 @@ function change_restore_to() {
 function restore_tab_group() {
     event_start();
     
-    var restore_tabgroup_id_list = get_select_value_from_list(document.getElementById('tbl_restore_tabgroup_list'), "id_cell");
-    var is_popup_close = false;
+    let restore_tabgroup_id_list = get_select_value_from_list(document.getElementById('tbl_restore_tabgroup_list'), "id_cell");
+    let is_popup_close = false;
     
-    var is_open_new_window = false;
+    let is_open_new_window = false;
     if( gConfig["restore_to"] == RESTORE_TO_ID_NEW_WINDOW ) { 
         is_open_new_window = true;
         is_popup_close = true;
     }
     
-    for( var i = 0; i < restore_tabgroup_id_list.length; i++ ) {
-        var tabgroup_id = restore_tabgroup_id_list[i];
-        var tabgroup_data = gTabgroupList[tabgroup_id].data;
+    for( let i = 0; i < restore_tabgroup_id_list.length; i++ ) {
+        let tabgroup_id = restore_tabgroup_id_list[i];
+        let tabgroup_data = gTabgroupList[tabgroup_id].data;
         
         open_tabs( tabgroup_data, is_open_new_window, true );
         
@@ -364,7 +364,7 @@ function restore_tab_group() {
 }
 
 async function open_tabs( tabgroup_data, is_open_new_window, is_open_last_pos ) {
-    var window_id;
+    let window_id;
     
     if( tabgroup_data.length > 0 ) {
         if( is_open_new_window ) {
@@ -374,20 +374,20 @@ async function open_tabs( tabgroup_data, is_open_new_window, is_open_last_pos ) 
             window_id = chrome.windows.WINDOW_ID_CURRENT;
         }
         
-        for( var data_index = 0; data_index < tabgroup_data.length; data_index++ ) {
+        for( let data_index = 0; data_index < tabgroup_data.length; data_index++ ) {
             await open_tab( tabgroup_data[data_index].url, window_id );
         }
     }
 }
 
 function refresh_restore_tabgroup_list() {
-    var table_id = "tbl_restore_tabgroup_list";
+    let table_id = "tbl_restore_tabgroup_list";
     
-    var table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
-    var row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
+    let table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
+    let row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
 
     table_body.innerHTML = "";
-    var counter = 0;
+    let counter = 0;
     for( id in gTabgroupList ) {
         row_data[1].value = gTabgroupList[id].name;
         row_data[2].value = String( counter );
@@ -405,7 +405,7 @@ function refresh_restore_tabgroup_list() {
 }
 
 function register_event_to_restore_tabgroup_list() {
-    var rows = document.getElementById("tbl_restore_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    let rows = document.getElementById("tbl_restore_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     for( i = 0; i < rows.length; i++ ) {
         rows[i].addEventListener('click', select_restore_tabgroup_list);
     }
@@ -425,7 +425,7 @@ function refresh_is_delete_tabgroup_on_restore() {
 }
 
 function refresh_is_empty_tabgroup_on_restore() {
-    var is_disable = false;
+    let is_disable = false;
     if( gConfig["is_delete_on_restore"] == true ) {
         is_disable = true;
     }
@@ -446,7 +446,7 @@ function refresh_restore_button_state() {
 }
 
 function is_restore_enable() {
-    var rtn = false;
+    let rtn = false;
     
     if( is_selected_list( document.getElementById("tbl_restore_tabgroup_list") ) ) {
         rtn = true;
@@ -467,8 +467,8 @@ function input_new_tabgroup_name_to_rename() {
 function rename_tabgroup() {
     event_start();
     
-    var new_name = document.getElementById("it_edit_new_name").value;
-    var rename_tabgroup_id = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "id_cell")[0];
+    let new_name = document.getElementById("it_edit_new_name").value;
+    let rename_tabgroup_id = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "id_cell")[0];
     gTabgroupList[rename_tabgroup_id].name = new_name;
     refresh_edit_page();
     
@@ -478,7 +478,7 @@ function rename_tabgroup() {
 function delete_tabgroup() {
     event_start();
     
-    var delete_tabgroup_id = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "id_cell")[0];
+    let delete_tabgroup_id = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "id_cell")[0];
     delete gTabgroupList[delete_tabgroup_id];
     refresh_edit_page();
     
@@ -488,10 +488,10 @@ function delete_tabgroup() {
 function delete_tab() {
     event_start();
     
-    var delete_tabgroup_id = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "id_cell")[0];
-    var tab_index;
+    let delete_tabgroup_id = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "id_cell")[0];
+    let tab_index;
     
-    var rows = document.getElementById("tbl_edit_tab_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    let rows = document.getElementById("tbl_edit_tab_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     for( i = rows.length - 1; i >= 0; i-- ) {   // 配列要素を削除していくので、後ろからサーチする
         if( rows[i].getElementsByTagName("input")[0].checked ) {
             tab_index = Number( rows[i].getElementsByClassName("id_cell")[0].innerHTML );
@@ -505,14 +505,14 @@ function delete_tab() {
 }
 
 async function refresh_edit_tabgroup_list() {
-    var table_id = "tbl_edit_tabgroup_list";
+    let table_id = "tbl_edit_tabgroup_list";
     
-    var tabs = await get_opening_tabs();
-    var table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
-    var row_data = [{ class: 'radiobutton_cell', value: '<input type="radio" name="rd_save_target_tabgroup">'}, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
+    let tabs = await get_opening_tabs();
+    let table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
+    let row_data = [{ class: 'radiobutton_cell', value: '<input type="radio" name="rd_save_target_tabgroup">'}, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
 
     table_body.innerHTML = "";
-    var counter = 0;
+    let counter = 0;
     for( id in gTabgroupList ) {
         row_data[1].value = gTabgroupList[id].name;
         row_data[2].value = String( counter );
@@ -530,7 +530,7 @@ async function refresh_edit_tabgroup_list() {
 }
 
 function register_event_to_edit_tabgroup_list() {
-    var rows = document.getElementById("tbl_edit_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    let rows = document.getElementById("tbl_edit_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     for( i = 0; i < rows.length; i++ ) {
         rows[i].addEventListener('click', select_edit_tabgroup_list);
     }
@@ -541,8 +541,8 @@ function select_edit_tabgroup_list(e) {
 
     single_list_selected(this, e, "tbl_edit_tabgroup_list");
 
-    var rows = document.getElementById("tbl_edit_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-    var edit_new_name = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "title_cell");
+    let rows = document.getElementById("tbl_edit_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    let edit_new_name = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "title_cell");
     document.getElementById("it_edit_new_name").value = edit_new_name;
 
     refresh_edit_tab_list();
@@ -556,20 +556,20 @@ function refresh_edit_new_tabgroup_name() {
 }
 
 function refresh_edit_tab_list() {
-    var select_tabgroup_id = '';
-    var select_tabgroup_id_list = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "id_cell");
+    let select_tabgroup_id = '';
+    let select_tabgroup_id_list = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "id_cell");
     if( select_tabgroup_id_list.length > 0 ) {
         select_tabgroup_id = select_tabgroup_id_list[0];
     }
     
-    var table_id = "tbl_edit_tab_list";
-    var table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
-    var row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'fav_icon_cell', value: '' }, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
+    let table_id = "tbl_edit_tab_list";
+    let table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
+    let row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'fav_icon_cell', value: '' }, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
     
     table_body.innerHTML = "";
     if( select_tabgroup_id != "" ) {
-        var tab_data = gTabgroupList[select_tabgroup_id].data;
-        for( var tab_index = 0; tab_index < tab_data.length; tab_index++ ) {
+        let tab_data = gTabgroupList[select_tabgroup_id].data;
+        for( let tab_index = 0; tab_index < tab_data.length; tab_index++ ) {
             if( tab_data[tab_index].fav_icon ) {
                 row_data[1].value = `<img src="${tab_data[tab_index].fav_icon}" class="fav_icon">`;
             } else {
@@ -590,7 +590,7 @@ function refresh_edit_tab_list() {
 }
 
 function register_event_to_edit_tab_list() {
-    var rows = document.getElementById("tbl_edit_tab_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    let rows = document.getElementById("tbl_edit_tab_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     for( i = 0; i < rows.length; i++ ) {
         rows[i].addEventListener('click', select_edit_tab_list);
     }
@@ -615,7 +615,7 @@ function refresh_rename_button_state() {
 }
 
 function is_rename_enable() {
-    var rtn = false;
+    let rtn = false;
     
     if( ( is_selected_list( document.getElementById("tbl_edit_tabgroup_list") ) )
      && ( document.getElementById("it_edit_new_name").value != "" ) ) {
@@ -630,7 +630,7 @@ function refresh_delete_tabgroup_button_state() {
 }
 
 function is_delete_tabgroup_enable() {
-    var rtn = false;
+    let rtn = false;
     
     if( is_selected_list( document.getElementById("tbl_edit_tabgroup_list") ) ) {
         rtn = true;
@@ -644,7 +644,7 @@ function refresh_delete_tab_button_state() {
 }
 
 function is_delete_tab_enable() {
-    var rtn = false;
+    let rtn = false;
     
     if( ( is_selected_list( document.getElementById("tbl_edit_tabgroup_list") ) )
      && ( is_selected_list( document.getElementById("tbl_edit_tab_list") ) ) ) {
@@ -656,31 +656,31 @@ function is_delete_tab_enable() {
 
 /* ===== Common functions ===== */
 async function get_opening_tabs() {
-    return new Promise ( function( resolve, reject ) {
-        chrome.tabs.query( { currentWindow: true }, function( tabs ) {
+    return new Promise ( ( resolve, reject ) => {
+        chrome.tabs.query( { currentWindow: true }, ( tabs ) => {
             resolve( tabs );
         });
     });
 }
 
 async function close_tabs( tab_ids ) {
-    return new Promise ( function( resolve, reject ) {
-        chrome.tabs.remove( tab_ids, function () {
+    return new Promise ( ( resolve, reject ) => {
+        chrome.tabs.remove( tab_ids, () => {
             resolve();
         });
     });
 }
 
 async function open_window( new_url ) {
-    return new Promise ( function( resolve, reject ) {
-        chrome.windows.create( { url: new_url }, function ( window ) {
+    return new Promise ( ( resolve, reject ) => {
+        chrome.windows.create( { url: new_url }, ( window ) => {
             resolve( window.id );
         });
     });
 }
 
 async function open_tab( new_url, target_window_id ) {
-    return new Promise ( function( resolve, reject ) {
+    return new Promise ( ( resolve, reject ) => {
         chrome.tabs.create({
             windowId: target_window_id,
             url: new_url,
@@ -692,7 +692,7 @@ async function open_tab( new_url, target_window_id ) {
 }
 
 function make_table_row( row_title, row_data ) {
-    var table_row = `<tr title="${row_title}">`;
+    let table_row = `<tr title="${row_title}">`;
     for( index = 0; index < row_data.length; index++ ) {
         table_row += `<td class="${row_data[index].class}">${row_data[index].value}</td>`
     }
@@ -705,20 +705,20 @@ function multi_list_selected( row, e, table_id ){
     if( gListLastClick.list != table_id ) {
         gListLastClick.list = "";
     }
-    var rows = document.getElementById(table_id).getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    let rows = document.getElementById(table_id).getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     if( e.target.type == "checkbox" ) {
         set_click_row( table_id, row, row.getElementsByTagName("input")[0].checked );
     } else if( e.toElement.className == "checkbox_cell" ) {
-        var new_state = !row.getElementsByTagName("input")[0].checked;
+        let new_state = !row.getElementsByTagName("input")[0].checked;
         row.getElementsByTagName("input")[0].checked = new_state;
         set_click_row( table_id, row, new_state );
     } else {
         if( e.ctrlKey ) {
-            var new_state = !row.getElementsByTagName("input")[0].checked;
+            let new_state = !row.getElementsByTagName("input")[0].checked;
             row.getElementsByTagName("input")[0].checked = new_state;
             set_click_row( table_id, row, new_state );
         } else if( e.shiftKey && gListLastClick.list == table_id) {
-            var click_row = row.getElementsByClassName("row_cell")[0].innerHTML;
+            let click_row = row.getElementsByClassName("row_cell")[0].innerHTML;
             for( i = Math.min( click_row, gListLastClick.row ); i <= Math.max( click_row, gListLastClick.row ); i++ ) {
                 rows[i].getElementsByTagName("input")[0].checked = true;
             }
@@ -740,7 +740,7 @@ function single_list_selected( row, e, table_id ) {
     }
     row.getElementsByTagName("input")[0].checked = true;
     
-    var rows = document.getElementById(table_id).getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    let rows = document.getElementById(table_id).getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     reflesh_list_color( rows );
 }
 
@@ -754,8 +754,8 @@ function set_click_row( table_id, row, is_enable ) {
 }
 
 function get_select_value_from_list( table, item_name ) {
-    var select_values = [];
-    var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    let select_values = [];
+    let rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     for( i = 0; i < rows.length; i++ ) {
         if( rows[i].getElementsByTagName("input")[0].checked ) {
             select_values.push(rows[i].getElementsByClassName(item_name)[0].innerHTML);
@@ -766,8 +766,8 @@ function get_select_value_from_list( table, item_name ) {
 }
 
 function is_selected_list( table ) {
-    var is_selected = false;
-    var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    let is_selected = false;
+    let rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     for( i = 0; i < rows.length; i++ ) {
         if( rows[i].getElementsByTagName("input")[0].checked ) {
             is_selected = true;
@@ -780,7 +780,7 @@ function is_selected_list( table ) {
 
 function reflesh_list_color( rows ) {
     for( i = 0; i < rows.length; i++ ) {
-        var row = rows[i];
+        let row = rows[i];
         if( row.getElementsByTagName("input")[0].checked ) {
             row.style.backgroundColor = "#5ab4bd";
         } else {
@@ -808,7 +808,7 @@ function load_all_nvdata() {
 }
 
 function get_config_data() {
-    var config_data = read_saved_data( "config" );
+    let config_data = read_saved_data( "config" );
     
     if( !( "is_delete_on_restore" in config_data ) ) {
         config_data["is_delete_on_restore"] = false;
@@ -858,15 +858,15 @@ function clear_select_box( select_box_elem )
 }
 
 function get_new_id() {
-    var now = new Date();
+    let now = new Date();
     
-    var year = number_to_string_with_zero_pad(now.getFullYear(), 4);
-    var month = number_to_string_with_zero_pad(now.getMonth() + 1, 2);
-    var date = number_to_string_with_zero_pad(now.getDate(), 2);
-    var hour = number_to_string_with_zero_pad(now.getHours(), 2);
-    var min = number_to_string_with_zero_pad(now.getMinutes(), 2);
-    var sec = number_to_string_with_zero_pad(now.getSeconds(), 2);
-    var msec = number_to_string_with_zero_pad(now.getMilliseconds(), 3);
+    let year = number_to_string_with_zero_pad(now.getFullYear(), 4);
+    let month = number_to_string_with_zero_pad(now.getMonth() + 1, 2);
+    let date = number_to_string_with_zero_pad(now.getDate(), 2);
+    let hour = number_to_string_with_zero_pad(now.getHours(), 2);
+    let min = number_to_string_with_zero_pad(now.getMinutes(), 2);
+    let sec = number_to_string_with_zero_pad(now.getSeconds(), 2);
+    let msec = number_to_string_with_zero_pad(now.getMilliseconds(), 3);
     
     return year + month + date + hour + min + sec + msec;
 }
