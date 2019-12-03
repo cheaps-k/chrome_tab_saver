@@ -166,23 +166,6 @@ async function save_tab() {
     event_end();
 }
 
-function select_save_tab() {
-    event_start();
-    
-    refresh_save_button_state();
-    
-    event_end();
-}
-
-function select_save_target_tabgroup() {
-    event_start();
-    
-    refresh_new_tabgroup_name_to_save();
-    refresh_save_button_state();
-    
-    event_end();
-}
-
 function input_new_tabgroup_name_to_save() {
     event_start();
     
@@ -473,14 +456,6 @@ function is_restore_enable() {
 }
 
 /* ===== Edit functions ===== */
-function select_edit_tab() {
-    event_start();
-    
-    refresh_edit_buttons();
-    
-    event_end();
-}
-
 function input_new_tabgroup_name_to_rename() {
     event_start();
     
@@ -680,20 +655,6 @@ function is_delete_tab_enable() {
 }
 
 /* ===== Common functions ===== */
-function set_tabgroup_list_for_select_box( select_box_id ) {
-    var elem_select_box = document.getElementById(select_box_id);
-    
-    clear_select_box( elem_select_box );
-    
-    for( id in gTabgroupList ) {
-        var option = document.createElement("option");
-        option.title = gTabgroupList[id].name;
-        option.text = gTabgroupList[id].name;
-        option.value = id;
-        elem_select_box.appendChild(option);
-    }
-}
-
 async function get_opening_tabs() {
     return new Promise ( function( resolve, reject ) {
         chrome.tabs.query( { currentWindow: true }, function( tabs ) {
