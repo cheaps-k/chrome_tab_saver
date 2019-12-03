@@ -605,7 +605,7 @@ function select_edit_tab_list(e) {
     event_end();
 }
 function refresh_edit_buttons() {
-    refresh_rename_button_state();console.log("refleshbutton");
+    refresh_rename_button_state();
     refresh_delete_tabgroup_button_state();
     refresh_delete_tab_button_state();
 }
