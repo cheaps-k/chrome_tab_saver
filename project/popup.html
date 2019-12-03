@@ -23,7 +23,7 @@
                                 <th class="list_table_col_fav_icon"></th>
                                 <th class="list_table_col_tab_title"></th>
                                 <th class="list_table_col_row"></th>
-                                <th class="list_table_col_tab_id"></th>
+                                <th class="list_table_col_id"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -31,7 +31,20 @@
                     </table>
                 </div>
                 <h1 id="save_page_select_tabgroup"></h1>
-                <select id="sb_save_target_tabgroup_list" size="10"></select>
+                <div class="list">
+                    <table class="list_table" id="tbl_save_target_tabgroup_list">
+                        <thead>
+                            <tr>
+                                <th class="list_table_col_radiobutton"></th>
+                                <th class="list_table_col_tab_title"></th>
+                                <th class="list_table_col_row"></th>
+                                <th class="list_table_col_id"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
                 <div style="overflow:auto;">
                     <input type="text" spellcheck="false" id="it_save_new_tabgroup" style="float: right;">
                     <label id="save_page_new_tabgroup" style="float: right;"></label>
@@ -42,7 +55,20 @@
 
             <div class="tab_content" id="restore_content">
                 <h1 id="restore_page_select_tabgroup"></h1>
-                <select id="sb_restore_tabgroup_list" multiple></select>
+                <div class="list">
+                    <table class="list_table" id="tbl_restore_tabgroup_list">
+                        <thead>
+                            <tr>
+                                <th class="list_table_col_checkbox"></th>
+                                <th class="list_table_col_tab_title"></th>
+                                <th class="list_table_col_row"></th>
+                                <th class="list_table_col_id"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
                 <button type="button" id="btn_restore_open_tabs" style="fleat: right;"></button>
                 <div>
                     <input type="checkbox" id="cb_restore_is_delete_tabgroup">
@@ -62,7 +88,20 @@
 
             <div class="tab_content" id="edit_content">
                 <h1 id="edit_page_select_tabgroup"></h1>
-                <select id="sb_edit_tabgroup_list" size="10"></select>
+                <div class="list">
+                    <table class="list_table" id="tbl_edit_tabgroup_list">
+                        <thead>
+                            <tr>
+                                <th class="list_table_col_radiobutton"></th>
+                                <th class="list_table_col_tab_title"></th>
+                                <th class="list_table_col_row"></th>
+                                <th class="list_table_col_id"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
                 <input type="text" spellcheck="false" id="it_edit_new_name">
                 <button type="button" id="btn_edit_delete_tabgroup"></button>
                 <button type="button" id="btn_edit_rename_tabgroup"></button>
@@ -75,7 +114,7 @@
                                 <th class="list_table_col_fav_icon"></th>
                                 <th class="list_table_col_tab_title"></th>
                                 <th class="list_table_col_row"></th>
-                                <th class="list_table_col_tab_id"></th>
+                                <th class="list_table_col_id"></th>
                             </tr>
                         </thead>
                         <tbody>

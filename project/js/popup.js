@@ -19,18 +19,15 @@ window.onload = function() {
         pages[page_index].addEventListener('change', refresh_page);
     }
     
-    document.getElementById('sb_save_target_tabgroup_list').addEventListener('change', select_save_target_tabgroup);
     document.getElementById('it_save_new_tabgroup').addEventListener('input', input_new_tabgroup_name_to_save);
     document.getElementById('btn_save_tabs').addEventListener('click', save_tab);
     
-    document.getElementById('sb_restore_tabgroup_list').addEventListener('change', select_restore_tabgroup);
     document.getElementById('cb_restore_is_delete_tabgroup').addEventListener('click', change_is_delete_on_restore);
     document.getElementById('cb_restore_is_empty_tabgroup').addEventListener('click', change_is_empty_on_restore);
     document.getElementById('rb_restore_current_window_last').addEventListener('click', change_restore_to);
     document.getElementById('rb_restore_new_window').addEventListener('click', change_restore_to);
     document.getElementById('btn_restore_open_tabs').addEventListener('click', restore_tab_group);
     
-    document.getElementById('sb_edit_tabgroup_list').addEventListener('change', select_edit_tabgroup);
     document.getElementById('it_edit_new_name').addEventListener('input', input_new_tabgroup_name_to_rename);
     document.getElementById('btn_edit_rename_tabgroup').addEventListener('click', rename_tabgroup);
     document.getElementById('btn_edit_delete_tabgroup').addEventListener('click', delete_tabgroup);
@@ -91,8 +88,8 @@ function refresh_page() {
     event_end();
 }
 
-function refresh_save_page() {
-    refresh_save_tab_list();
+async function refresh_save_page() {
+    await refresh_save_tab_list();
     refresh_save_target_tabgroup_list();
     refresh_new_tabgroup_name_to_save();
     refresh_save_button_state();
@@ -106,8 +103,8 @@ function refresh_restore_page() {
     refresh_restore_button_state();
 }
 
-function refresh_edit_page() {
-    refresh_edit_tabgroup_list();
+async function refresh_edit_page() {
+    await refresh_edit_tabgroup_list();
     refresh_edit_new_tabgroup_name();
     refresh_edit_tab_list();
     refresh_edit_buttons();
@@ -122,7 +119,7 @@ async function save_tab() {
     var rows = document.getElementById("tbl_save_tab_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     for( i = 0; i < rows.length; i++ ) {
         if( rows[i].getElementsByTagName("input")[0].checked ) {
-            save_tab_ids.push( Number( rows[i].getElementsByClassName("tab_id_cell")[0].innerHTML ) );
+            save_tab_ids.push( Number( rows[i].getElementsByClassName("id_cell")[0].innerHTML ) );
         }
     }
     
@@ -135,7 +132,13 @@ async function save_tab() {
     new_tabgroup = document.getElementById('it_save_new_tabgroup').value;
     if( new_tabgroup == "" ) {
         /* 既存タブグループへの保存 */
-        save_target_id = document.getElementById("sb_save_target_tabgroup_list").value;
+        var rows = document.getElementById("tbl_save_target_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+        for( i = 0; i < rows.length; i++ ) {
+            if( rows[i].getElementsByTagName("input")[0].checked ) {
+                save_target_id = rows[i].getElementsByClassName("id_cell")[0].innerHTML;
+                break;
+            }
+        }
     } else {
         /* 新規タブグループへの保存 */
         save_target_id = get_new_id();
@@ -194,7 +197,7 @@ async function refresh_save_tab_list() {
     
     var tabs = await get_opening_tabs();
     var table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
-    var row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'fav_icon_cell', value: '' }, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'tab_id_cell', value: ''}];
+    var row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'fav_icon_cell', value: '' }, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
 
     table_body.innerHTML = "";
     for( var index = 0; index < tabs.length; index++ ) {
@@ -233,7 +236,44 @@ function select_save_tab_list(e) {
 }
 
 function refresh_save_target_tabgroup_list() {
-    set_tabgroup_list_for_select_box("sb_save_target_tabgroup_list");
+    var table_id = "tbl_save_target_tabgroup_list";
+    
+    var table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
+    var row_data = [{ class: 'radiobutton_cell', value: '<input type="radio" name="rd_save_target_tabgroup">'}, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
+
+    table_body.innerHTML = "";
+    var counter = 0;
+    for( id in gTabgroupList ) {
+        row_data[1].value = gTabgroupList[id].name;
+        row_data[2].value = String( counter );
+        row_data[3].value = id;
+        
+        table_body.innerHTML += make_table_row( gTabgroupList[id].name, row_data );
+        
+        counter++;
+    }
+    register_event_to_save_target_tabgroup_list();
+    
+    if( gListLastClick.list == table_id ) {
+        gListLastClick.list = "";
+    }
+}
+
+function register_event_to_save_target_tabgroup_list() {
+    var rows = document.getElementById("tbl_save_target_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    for( i = 0; i < rows.length; i++ ) {
+        rows[i].addEventListener('click', select_save_target_tabgroup_list);
+    }
+}
+
+function select_save_target_tabgroup_list(e) {
+    event_start();
+
+    single_list_selected(this, e, "tbl_save_target_tabgroup_list");
+    document.getElementById('it_save_new_tabgroup').value = "";
+    refresh_save_button_state();
+
+    event_end();
 }
 
 function refresh_new_tabgroup_name_to_save() {
@@ -248,16 +288,25 @@ function is_save_enable() {
     var rtn = false;
     
     var is_select_save_tab = false;
-    var is_selects = document.getElementById("tbl_save_tab_list").getElementsByTagName("input");
-    for( i = 0; i < is_selects.length; i++ ) {
-        if( is_selects[i].checked ) {
+    var save_tab_selects = document.getElementById("tbl_save_tab_list").getElementsByTagName("input");
+    for( i = 0; i < save_tab_selects.length; i++ ) {
+        if( save_tab_selects[i].checked ) {
             is_select_save_tab = true;
             break;
         }
     }
     
     if( is_select_save_tab ) {
-        if( ( document.getElementById("sb_save_target_tabgroup_list").selectedIndex != -1 ) 
+        var is_select_save_target_tabgroup = false;
+        var save_target_tabgroup_selects = document.getElementById("tbl_save_target_tabgroup_list").getElementsByTagName("input");
+        for( i = 0; i < save_target_tabgroup_selects.length; i++ ) {
+            if( save_target_tabgroup_selects[i].checked ) {
+                is_select_save_target_tabgroup = true;
+                break;
+            }
+        }
+        
+        if( ( is_select_save_target_tabgroup )
          || ( document.getElementById('it_save_new_tabgroup').value != "" ) ) {
             rtn = true;
         }
@@ -300,7 +349,7 @@ function change_restore_to() {
 function restore_tab_group() {
     event_start();
     
-    var elem_restore_tabgroup_list = document.getElementById('sb_restore_tabgroup_list');
+    var restore_tabgroup_id_list = get_select_value_from_list(document.getElementById('tbl_restore_tabgroup_list'), "id_cell");
     var is_popup_close = false;
     
     var is_open_new_window = false;
@@ -309,18 +358,16 @@ function restore_tab_group() {
         is_popup_close = true;
     }
     
-    for( var i = 0; i < elem_restore_tabgroup_list.length; i++ ) {
-        if( elem_restore_tabgroup_list[i].selected ) {
-            var tabgroup_id = elem_restore_tabgroup_list[i].value;
-            var tabgroup_data = gTabgroupList[tabgroup_id].data;
-            
-            open_tabs( tabgroup_data, is_open_new_window, true );
-            
-            if( gConfig["is_delete_on_restore"] ) {
-                delete gTabgroupList[tabgroup_id];
-            } else if( gConfig["is_empty_on_restore"] ) {
-                gTabgroupList[tabgroup_id].data = [];
-            }
+    for( var i = 0; i < restore_tabgroup_id_list.length; i++ ) {
+        var tabgroup_id = restore_tabgroup_id_list[i];
+        var tabgroup_data = gTabgroupList[tabgroup_id].data;
+        
+        open_tabs( tabgroup_data, is_open_new_window, true );
+        
+        if( gConfig["is_delete_on_restore"] ) {
+            delete gTabgroupList[tabgroup_id];
+        } else if( gConfig["is_empty_on_restore"] ) {
+            gTabgroupList[tabgroup_id].data = [];
         }
     }
     
@@ -351,14 +398,42 @@ async function open_tabs( tabgroup_data, is_open_new_window, is_open_last_pos ) 
 }
 
 function refresh_restore_tabgroup_list() {
-    set_tabgroup_list_for_select_box("sb_restore_tabgroup_list");
+    var table_id = "tbl_restore_tabgroup_list";
+    
+    var table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
+    var row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
+
+    table_body.innerHTML = "";
+    var counter = 0;
+    for( id in gTabgroupList ) {
+        row_data[1].value = gTabgroupList[id].name;
+        row_data[2].value = String( counter );
+        row_data[3].value = id;
+        
+        table_body.innerHTML += make_table_row( gTabgroupList[id].name, row_data );
+        
+        counter++;
+    }
+    register_event_to_restore_tabgroup_list();
+    
+    if( gListLastClick.list == table_id ) {
+        gListLastClick.list = "";
+    }
 }
 
-function select_restore_tabgroup() {
+function register_event_to_restore_tabgroup_list() {
+    var rows = document.getElementById("tbl_restore_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    for( i = 0; i < rows.length; i++ ) {
+        rows[i].addEventListener('click', select_restore_tabgroup_list);
+    }
+}
+
+function select_restore_tabgroup_list(e) {
     event_start();
-    
+
+    multi_list_selected(this, e, "tbl_restore_tabgroup_list");
     refresh_restore_button_state();
-    
+
     event_end();
 }
 
@@ -390,7 +465,7 @@ function refresh_restore_button_state() {
 function is_restore_enable() {
     var rtn = false;
     
-    if( document.getElementById("sb_restore_tabgroup_list").selectedIndex != -1 ) {
+    if( is_selected_list( document.getElementById("tbl_restore_tabgroup_list") ) ) {
         rtn = true;
     }
     
@@ -398,20 +473,6 @@ function is_restore_enable() {
 }
 
 /* ===== Edit functions ===== */
-function select_edit_tabgroup() {
-    event_start();
-    
-    var tabgroup_list = document.getElementById("sb_edit_tabgroup_list");
-    var select_tabgroup_name = tabgroup_list.options[tabgroup_list.selectedIndex].text;
-    
-    document.getElementById("it_edit_new_name").value = select_tabgroup_name;
-    
-    refresh_edit_tab_list();
-    refresh_edit_buttons();
-    
-    event_end();
-}
-
 function select_edit_tab() {
     event_start();
     
@@ -432,7 +493,7 @@ function rename_tabgroup() {
     event_start();
     
     var new_name = document.getElementById("it_edit_new_name").value;
-    var rename_tabgroup_id = document.getElementById("sb_edit_tabgroup_list").value;
+    var rename_tabgroup_id = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "id_cell")[0];
     gTabgroupList[rename_tabgroup_id].name = new_name;
     refresh_edit_page();
     
@@ -442,7 +503,7 @@ function rename_tabgroup() {
 function delete_tabgroup() {
     event_start();
     
-    var delete_tabgroup_id = document.getElementById("sb_edit_tabgroup_list").value;
+    var delete_tabgroup_id = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "id_cell")[0];
     delete gTabgroupList[delete_tabgroup_id];
     refresh_edit_page();
     
@@ -452,13 +513,13 @@ function delete_tabgroup() {
 function delete_tab() {
     event_start();
     
-    var delete_tabgroup_id = document.getElementById("sb_edit_tabgroup_list").value;
+    var delete_tabgroup_id = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "id_cell")[0];
     var tab_index;
     
     var rows = document.getElementById("tbl_edit_tab_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     for( i = rows.length - 1; i >= 0; i-- ) {   // 配列要素を削除していくので、後ろからサーチする
         if( rows[i].getElementsByTagName("input")[0].checked ) {
-            tab_index = Number( rows[i].getElementsByClassName("tab_id_cell")[0].innerHTML );
+            tab_index = Number( rows[i].getElementsByClassName("id_cell")[0].innerHTML );
             delete gTabgroupList[delete_tabgroup_id].data.splice(i, 1);
         }
     }
@@ -468,8 +529,51 @@ function delete_tab() {
     event_end();
 }
 
-function refresh_edit_tabgroup_list() {
-    set_tabgroup_list_for_select_box("sb_edit_tabgroup_list");
+async function refresh_edit_tabgroup_list() {
+    var table_id = "tbl_edit_tabgroup_list";
+    
+    var tabs = await get_opening_tabs();
+    var table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
+    var row_data = [{ class: 'radiobutton_cell', value: '<input type="radio" name="rd_save_target_tabgroup">'}, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
+
+    table_body.innerHTML = "";
+    var counter = 0;
+    for( id in gTabgroupList ) {
+        row_data[1].value = gTabgroupList[id].name;
+        row_data[2].value = String( counter );
+        row_data[3].value = id;
+        
+        table_body.innerHTML += make_table_row( gTabgroupList[id].name, row_data );
+        
+        counter++;
+    }
+    register_event_to_edit_tabgroup_list();
+    
+    if( gListLastClick.list == table_id ) {
+        gListLastClick.list = "";
+    }
+}
+
+function register_event_to_edit_tabgroup_list() {
+    var rows = document.getElementById("tbl_edit_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    for( i = 0; i < rows.length; i++ ) {
+        rows[i].addEventListener('click', select_edit_tabgroup_list);
+    }
+}
+
+function select_edit_tabgroup_list(e) {
+    event_start();
+
+    single_list_selected(this, e, "tbl_edit_tabgroup_list");
+
+    var rows = document.getElementById("tbl_edit_tabgroup_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    var edit_new_name = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "title_cell");
+    document.getElementById("it_edit_new_name").value = edit_new_name;
+
+    refresh_edit_tab_list();
+    refresh_edit_buttons();
+
+    event_end();
 }
 
 function refresh_edit_new_tabgroup_name() {
@@ -477,11 +581,15 @@ function refresh_edit_new_tabgroup_name() {
 }
 
 function refresh_edit_tab_list() {
-    var table_id = "tbl_edit_tab_list";
+    var select_tabgroup_id = '';
+    var select_tabgroup_id_list = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "id_cell");
+    if( select_tabgroup_id_list.length > 0 ) {
+        select_tabgroup_id = select_tabgroup_id_list[0];
+    }
     
+    var table_id = "tbl_edit_tab_list";
     var table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
-    var row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'fav_icon_cell', value: '' }, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'tab_id_cell', value: ''}];
-    var select_tabgroup_id = document.getElementById("sb_edit_tabgroup_list").value;
+    var row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'fav_icon_cell', value: '' }, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
     
     table_body.innerHTML = "";
     if( select_tabgroup_id != "" ) {
@@ -522,7 +630,7 @@ function select_edit_tab_list(e) {
     event_end();
 }
 function refresh_edit_buttons() {
-    refresh_rename_button_state();
+    refresh_rename_button_state();console.log("refleshbutton");
     refresh_delete_tabgroup_button_state();
     refresh_delete_tab_button_state();
 }
@@ -534,7 +642,7 @@ function refresh_rename_button_state() {
 function is_rename_enable() {
     var rtn = false;
     
-    if( ( document.getElementById("sb_edit_tabgroup_list").selectedIndex != -1 )
+    if( ( is_selected_list( document.getElementById("tbl_edit_tabgroup_list") ) )
      && ( document.getElementById("it_edit_new_name").value != "" ) ) {
         rtn = true;
     }
@@ -549,7 +657,7 @@ function refresh_delete_tabgroup_button_state() {
 function is_delete_tabgroup_enable() {
     var rtn = false;
     
-    if( document.getElementById("sb_edit_tabgroup_list").selectedIndex != -1 ) {
+    if( is_selected_list( document.getElementById("tbl_edit_tabgroup_list") ) ) {
         rtn = true;
     }
     
@@ -563,17 +671,8 @@ function refresh_delete_tab_button_state() {
 function is_delete_tab_enable() {
     var rtn = false;
     
-    var is_select_edit_tab = false;
-    var is_selects = document.getElementById("tbl_edit_tab_list").getElementsByTagName("input");
-    for( i = 0; i < is_selects.length; i++ ) {
-        if( is_selects[i].checked ) {
-            is_select_edit_tab = true;
-            break;
-        }
-    }
-    
-    if( ( document.getElementById("sb_edit_tabgroup_list").selectedIndex != -1 )
-     && ( is_select_edit_tab ) ) {
+    if( ( is_selected_list( document.getElementById("tbl_edit_tabgroup_list") ) )
+     && ( is_selected_list( document.getElementById("tbl_edit_tab_list") ) ) ) {
         rtn = true;
     }
     
@@ -645,7 +744,6 @@ function multi_list_selected( row, e, table_id ){
     if( gListLastClick.list != table_id ) {
         gListLastClick.list = "";
     }
-    console.log(gListLastClick);
     var rows = document.getElementById(table_id).getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     if( e.target.type == "checkbox" ) {
         set_click_row( table_id, row, row.getElementsByTagName("input")[0].checked );
@@ -672,7 +770,17 @@ function multi_list_selected( row, e, table_id ){
             set_click_row( table_id, row, true );
         }
     }
-    reflesh_multi_list_color( rows );
+    reflesh_list_color( rows );
+}
+
+function single_list_selected( row, e, table_id ) {
+    if( gListLastClick.list != table_id ) {
+        gListLastClick.list = "";
+    }
+    row.getElementsByTagName("input")[0].checked = true;
+    
+    var rows = document.getElementById(table_id).getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    reflesh_list_color( rows );
 }
 
 function set_click_row( table_id, row, is_enable ) {
@@ -684,7 +792,32 @@ function set_click_row( table_id, row, is_enable ) {
     }
 }
 
-function reflesh_multi_list_color( rows ) {
+function get_select_value_from_list( table, item_name ) {
+    var select_values = [];
+    var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    for( i = 0; i < rows.length; i++ ) {
+        if( rows[i].getElementsByTagName("input")[0].checked ) {
+            select_values.push(rows[i].getElementsByClassName(item_name)[0].innerHTML);
+        }
+    }
+    
+    return select_values;
+}
+
+function is_selected_list( table ) {
+    var is_selected = false;
+    var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    for( i = 0; i < rows.length; i++ ) {
+        if( rows[i].getElementsByTagName("input")[0].checked ) {
+            is_selected = true;
+            break;
+        }
+    }
+    
+    return is_selected;
+}
+
+function reflesh_list_color( rows ) {
     for( i = 0; i < rows.length; i++ ) {
         var row = rows[i];
         if( row.getElementsByTagName("input")[0].checked ) {
