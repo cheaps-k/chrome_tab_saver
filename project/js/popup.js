@@ -852,7 +852,7 @@ function get_config_data() {
 }
 
 function config_convert(config_data) {
-    /* v1.1.1 to v1.1.2 */
+    /* v1.1.1 to v1.2.0 */
     if( "is_empty_on_restore" in config_data ) {
         if( config_data["is_empty_on_restore"] == true ) {
             config_data["tabgroup_handling_on_restore"] = TABGROUP_HANDLING_ON_RESTORE_TO_EMPTY;
