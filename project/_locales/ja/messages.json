@@ -18,8 +18,9 @@
     "restore_page_radio_open_right_of_active_tab": { "message": "アクティブなタブの右" },
     "restore_page_radio_open_new_window": { "message": "新しいウィンドウ" },
     "legend_tabgroup_handling_in_restore": { "message": "復元時のタブグループの取り扱い" },
-    "restore_page_check_is_delete_tabgroup": { "message": "削除する" },
-    "restore_page_check_is_empty_tabgroup": { "message": "空にする" },
+    "restore_page_rb_tabgroup_handling_on_restore_not_affect": { "message": "何もしない" },
+    "restore_page_rb_tabgroup_handling_on_restore_to_empty": { "message": "空にする" },
+    "restore_page_rb_tabgroup_handling_on_restore_delete": { "message": "削除する" },
 
     "edit_page_select_tabgroup": { "message": "編集するタブグループの選択" },
     "edit_page_rename_tabgroup_button": { "message": "名前変更" },

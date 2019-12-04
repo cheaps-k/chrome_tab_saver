@@ -1,6 +1,10 @@
 const REFRESH_PAGE_FUNCTIONS = [refresh_save_page, refresh_restore_page, refresh_edit_page];
 const MESSAGE_OPENED_POPUP = "tab_shelf-opened_popup";
 
+const TABGROUP_HANDLING_ON_RESTORE_NOT_AFFECT = 0;
+const TABGROUP_HANDLING_ON_RESTORE_DELETE = 1;
+const TABGROUP_HANDLING_ON_RESTORE_TO_EMPTY = 2;
+
 const RESTORE_TO_ID_CURRENT_WINDOW_LAST = 0;
 const RESTORE_TO_ID_NEW_WINDOW = 1;
 const RESTORE_TO_ID_RIGHT_OF_ACTIVE_TAB = 2;
@@ -23,8 +27,9 @@ window.onload = () => {
     document.getElementById('it_save_new_tabgroup').addEventListener('input', input_new_tabgroup_name_to_save);
     document.getElementById('btn_save_tabs').addEventListener('click', save_tab);
     
-    document.getElementById('cb_restore_is_delete_tabgroup').addEventListener('click', change_is_delete_on_restore);
-    document.getElementById('cb_restore_is_empty_tabgroup').addEventListener('click', change_is_empty_on_restore);
+    document.getElementById('rb_not_affect_to_tabgroup_on_restore').addEventListener('click', change_tabgroup_handling_on_restore);
+    document.getElementById('rb_to_empty_tabgroup_on_restore').addEventListener('click', change_tabgroup_handling_on_restore);
+    document.getElementById('rb_delete_tabgroup_on_restore').addEventListener('click', change_tabgroup_handling_on_restore);
     document.getElementById('rb_restore_current_window_last').addEventListener('click', change_restore_to);
     document.getElementById('rb_restore_right_of_active_tab').addEventListener('click', change_restore_to);
     document.getElementById('rb_restore_new_window').addEventListener('click', change_restore_to);
@@ -65,8 +70,9 @@ function set_popup_string() {
     set_element_string('restore_page_rb_restore_to_current_window_last', 'restore_page_radio_open_current_window_last');
     set_element_string('restore_page_rb_restore_to_new_window', 'restore_page_radio_open_new_window');
     set_element_string('legend_tabgroup_handling_in_restore', 'legend_tabgroup_handling_in_restore');
-    set_element_string('restore_page_check_is_delete_tabgroup', 'restore_page_check_is_delete_tabgroup');
-    set_element_string('restore_page_check_is_empty_tabgroup', 'restore_page_check_is_empty_tabgroup');
+    set_element_string('restore_page_rb_tabgroup_handling_on_restore_not_affect', 'restore_page_rb_tabgroup_handling_on_restore_not_affect');
+    set_element_string('restore_page_rb_tabgroup_handling_on_restore_to_empty', 'restore_page_rb_tabgroup_handling_on_restore_to_empty');
+    set_element_string('restore_page_rb_tabgroup_handling_on_restore_delete', 'restore_page_rb_tabgroup_handling_on_restore_delete');
 
     set_element_string('edit_page_select_tabgroup', 'edit_page_select_tabgroup');
     set_element_string('btn_edit_delete_tabgroup', 'edit_page_delete_tabgroup_button');
@@ -103,10 +109,9 @@ async function refresh_save_page() {
 
 function refresh_restore_page() {
     refresh_restore_tabgroup_list();
-    refresh_is_delete_tabgroup_on_restore();
-    refresh_is_empty_tabgroup_on_restore();
-    refresh_restore_to();
     refresh_restore_button_state();
+    refresh_restore_to();
+    refresh_tabgroup_handling_on_restore();
 }
 
 async function refresh_edit_page() {
@@ -305,20 +310,16 @@ function is_save_enable() {
 }
 
 /* ===== Restore functions ===== */
-function change_is_delete_on_restore() {
+function change_tabgroup_handling_on_restore() {
     event_start();
     
-    gConfig["is_delete_on_restore"] = document.getElementById('cb_restore_is_delete_tabgroup').checked;
-    
-    refresh_is_empty_tabgroup_on_restore();
-    
-    event_end();
-}
-
-function change_is_empty_on_restore() {
-    event_start();
-    
-    gConfig["is_empty_on_restore"] = document.getElementById('cb_restore_is_empty_tabgroup').checked;
+    if( document.getElementById('rb_not_affect_to_tabgroup_on_restore').checked ) {
+        gConfig["tabgroup_handling_on_restore"] = TABGROUP_HANDLING_ON_RESTORE_NOT_AFFECT;
+    } else if ( document.getElementById('rb_delete_tabgroup_on_restore').checked ) {
+        gConfig["tabgroup_handling_on_restore"] = TABGROUP_HANDLING_ON_RESTORE_DELETE;
+    } else if ( document.getElementById('rb_to_empty_tabgroup_on_restore').checked ) {
+        gConfig["tabgroup_handling_on_restore"] = TABGROUP_HANDLING_ON_RESTORE_TO_EMPTY;
+    }
     
     event_end();
 }
@@ -358,9 +359,9 @@ function restore_tab_group() {
         
         open_tabs( tabgroup_data, is_open_new_window, is_open_last_pos );
         
-        if( gConfig["is_delete_on_restore"] ) {
+        if( gConfig["tabgroup_handling_on_restore"] == TABGROUP_HANDLING_ON_RESTORE_DELETE ) {
             delete gTabgroupList[tabgroup_id];
-        } else if( gConfig["is_empty_on_restore"] ) {
+        } else if( gConfig["tabgroup_handling_on_restore"] == TABGROUP_HANDLING_ON_RESTORE_TO_EMPTY ) {
             gTabgroupList[tabgroup_id].data = [];
         }
     }
@@ -440,17 +441,14 @@ function select_restore_tabgroup_list(e) {
     event_end();
 }
 
-function refresh_is_delete_tabgroup_on_restore() {
-    document.getElementById('cb_restore_is_delete_tabgroup').checked = gConfig["is_delete_on_restore"];
-}
-
-function refresh_is_empty_tabgroup_on_restore() {
-    let is_disable = false;
-    if( gConfig["is_delete_on_restore"] == true ) {
-        is_disable = true;
+function refresh_tabgroup_handling_on_restore() {
+    if( gConfig["tabgroup_handling_on_restore"] == TABGROUP_HANDLING_ON_RESTORE_NOT_AFFECT ) {
+        document.getElementById('rb_not_affect_to_tabgroup_on_restore').checked = true;
+    } else if( gConfig["tabgroup_handling_on_restore"] == TABGROUP_HANDLING_ON_RESTORE_DELETE ) {
+        document.getElementById('rb_delete_tabgroup_on_restore').checked = true;
+    } else if( gConfig["tabgroup_handling_on_restore"] == TABGROUP_HANDLING_ON_RESTORE_TO_EMPTY ) {
+        document.getElementById('rb_to_empty_tabgroup_on_restore').checked = true;
     }
-    document.getElementById('cb_restore_is_empty_tabgroup').disabled = is_disable;
-    document.getElementById('cb_restore_is_empty_tabgroup').checked = gConfig["is_empty_on_restore"];
 }
 
 function refresh_restore_to() {
@@ -841,14 +839,31 @@ function load_all_nvdata() {
 function get_config_data() {
     let config_data = read_saved_data( "config" );
     
-    if( !( "is_delete_on_restore" in config_data ) ) {
-        config_data["is_delete_on_restore"] = false;
-    }
-    if( !( "is_empty_on_restore" in config_data ) ) {
-        config_data["is_empty_on_restore"] = true;
+    if( !( "tabgroup_handling_on_restore" in config_data ) ) {
+        config_data["tabgroup_handling_on_restore"] = TABGROUP_HANDLING_ON_RESTORE_NOT_AFFECT;
     }
     if( !( "restore_to" in config_data ) ) {
         config_data["restore_to"] = RESTORE_TO_ID_CURRENT_WINDOW_LAST;
+    }
+    
+    config_data = config_convert( config_data );
+    
+    return config_data;
+}
+
+function config_convert(config_data) {
+    /* v1.1.1 to v1.1.2 */
+    if( "is_empty_on_restore" in config_data ) {
+        if( config_data["is_empty_on_restore"] == true ) {
+            config_data["tabgroup_handling_on_restore"] = TABGROUP_HANDLING_ON_RESTORE_TO_EMPTY;
+        }
+        delete config_data["is_empty_on_restore"];
+    }
+    if( "is_delete_on_restore" in config_data ) {
+        if( config_data["is_delete_on_restore"] == true ) {
+            config_data["tabgroup_handling_on_restore"] = TABGROUP_HANDLING_ON_RESTORE_DELETE;
+        }
+        delete config_data["is_delete_on_restore"];
     }
     
     return config_data;
