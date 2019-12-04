@@ -69,21 +69,41 @@
                         </tbody>
                     </table>
                 </div>
-                <button type="button" id="btn_restore_open_tabs" style="fleat: right;"></button>
                 <div>
-                    <input type="checkbox" class="setting" id="cb_restore_is_delete_tabgroup">
-                    <label id="restore_page_check_is_delete_tabgroup" class="setting label_for_checkbox" for="cb_restore_is_delete_tabgroup"></label>
+                    <button type="button" id="btn_restore_open_tabs"></button>
                 </div>
-                <div>
-                    <input type="checkbox" class="setting" id="cb_restore_is_empty_tabgroup">
-                    <label id="restore_page_check_is_empty_tabgroup" class="setting label_for_checkbox" for="cb_restore_is_empty_tabgroup"></label>
-                </div>
-                <div>
-                    <input type="radio" class="setting" name="restore_to" id="rb_restore_current_window_last">
-                    <label id="restore_page_rb_restore_to_current_window_last" class="setting label_for_radiobutton" for="rb_restore_current_window_last"></label>
-                    <input type="radio" class="setting" name="restore_to" id="rb_restore_new_window">
-                    <label id="restore_page_rb_restore_to_new_window" class="setting label_for_radiobutton" for="rb_restore_new_window"></label>
-                </div>
+                <fieldset class="group_1" style="clear:both">
+                    <legend class="group_title_1" id="legend_restore_setting"></legend>
+                    <fieldset class="group_2">
+                        <legend class="group_title_2" id="legend_restore_to"></legend>
+                        <div>
+                            <input type="radio" class="setting" name="restore_to" id="rb_restore_current_window_last">
+                            <label id="restore_page_rb_restore_to_current_window_last" class="setting label_for_radiobutton" for="rb_restore_current_window_last"></label>
+                        </div>
+                        <div>
+                            <input type="radio" class="setting" name="restore_to" id="rb_restore_right_of_active_tab">
+                            <label id="restore_page_radio_open_right_of_active_tab" class="setting label_for_radiobutton" for="rb_restore_right_of_active_tab"></label>
+                        </div>
+                        <div>
+                            <input type="radio" class="setting" name="restore_to" id="rb_restore_new_window">
+                            <label id="restore_page_rb_restore_to_new_window" class="setting label_for_radiobutton" for="rb_restore_new_window"></label>
+                        </div>
+                    </fieldset>
+                    <fieldset class="group_2">
+                        <legend class="group_title_2" id="legend_tabgroup_handling_in_restore"></legend>
+                        <div>
+                            <input type="checkbox" class="setting" id="cb_restore_is_empty_tabgroup">
+                            <label id="restore_page_check_is_empty_tabgroup" class="setting label_for_checkbox" for="cb_restore_is_empty_tabgroup"></label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="setting" id="cb_restore_is_delete_tabgroup">
+                            <label id="restore_page_check_is_delete_tabgroup" class="setting label_for_checkbox" for="cb_restore_is_delete_tabgroup"></label>
+                        </div>
+                    </fieldset>
+                </fieldset>
+
+
+
             </div>
 
             <div class="tab_content" id="edit_content">

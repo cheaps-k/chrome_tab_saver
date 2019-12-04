@@ -3,6 +3,7 @@ const MESSAGE_OPENED_POPUP = "tab_shelf-opened_popup";
 
 const RESTORE_TO_ID_CURRENT_WINDOW_LAST = 0;
 const RESTORE_TO_ID_NEW_WINDOW = 1;
+const RESTORE_TO_ID_RIGHT_OF_ACTIVE_TAB = 2;
 
 let gConfig;
 let gTabgroupList;
@@ -25,6 +26,7 @@ window.onload = () => {
     document.getElementById('cb_restore_is_delete_tabgroup').addEventListener('click', change_is_delete_on_restore);
     document.getElementById('cb_restore_is_empty_tabgroup').addEventListener('click', change_is_empty_on_restore);
     document.getElementById('rb_restore_current_window_last').addEventListener('click', change_restore_to);
+    document.getElementById('rb_restore_right_of_active_tab').addEventListener('click', change_restore_to);
     document.getElementById('rb_restore_new_window').addEventListener('click', change_restore_to);
     document.getElementById('btn_restore_open_tabs').addEventListener('click', restore_tab_group);
     
@@ -56,11 +58,15 @@ function set_popup_string() {
     set_element_string('btn_save_tabs', 'save_page_save_button');
 
     set_element_string('restore_page_select_tabgroup', 'restore_page_select_tabgroup');
-    set_element_string('restore_page_check_is_delete_tabgroup', 'restore_page_check_is_delete_tabgroup');
-    set_element_string('restore_page_check_is_empty_tabgroup', 'restore_page_check_is_empty_tabgroup');
+    set_element_string('btn_restore_open_tabs', 'restore_page_restore_button');
+    set_element_string('legend_restore_setting', 'legend_restore_setting');
+    set_element_string('legend_restore_to', 'legend_restore_to');
+    set_element_string('restore_page_radio_open_right_of_active_tab', 'restore_page_radio_open_right_of_active_tab');
     set_element_string('restore_page_rb_restore_to_current_window_last', 'restore_page_radio_open_current_window_last');
     set_element_string('restore_page_rb_restore_to_new_window', 'restore_page_radio_open_new_window');
-    set_element_string('btn_restore_open_tabs', 'restore_page_restore_button');
+    set_element_string('legend_tabgroup_handling_in_restore', 'legend_tabgroup_handling_in_restore');
+    set_element_string('restore_page_check_is_delete_tabgroup', 'restore_page_check_is_delete_tabgroup');
+    set_element_string('restore_page_check_is_empty_tabgroup', 'restore_page_check_is_empty_tabgroup');
 
     set_element_string('edit_page_select_tabgroup', 'edit_page_select_tabgroup');
     set_element_string('btn_edit_delete_tabgroup', 'edit_page_delete_tabgroup_button');
@@ -153,7 +159,7 @@ async function save_tab() {
     
     /* If selected all tabs, open new tab */
     if( tabs.length == save_tab_ids.length ) {
-        await open_tab( "chrome://newtab/", chrome.windows.WINDOW_ID_CURRENT );
+        await open_tab( "chrome://newtab/", chrome.windows.WINDOW_ID_CURRENT, 0 );
     }
     
     /* Close tabs */
@@ -322,6 +328,8 @@ function change_restore_to() {
     
     if( document.getElementById('rb_restore_current_window_last').checked ) {
         gConfig["restore_to"] = RESTORE_TO_ID_CURRENT_WINDOW_LAST;
+    } else if ( document.getElementById('rb_restore_right_of_active_tab').checked ) {
+        gConfig["restore_to"] = RESTORE_TO_ID_RIGHT_OF_ACTIVE_TAB;
     } else if ( document.getElementById('rb_restore_new_window').checked ) {
         gConfig["restore_to"] = RESTORE_TO_ID_NEW_WINDOW;
     }
@@ -336,16 +344,19 @@ function restore_tab_group() {
     let is_popup_close = false;
     
     let is_open_new_window = false;
+    let is_open_last_pos = true;
     if( gConfig["restore_to"] == RESTORE_TO_ID_NEW_WINDOW ) { 
         is_open_new_window = true;
         is_popup_close = true;
+    } else if ( gConfig["restore_to"] == RESTORE_TO_ID_RIGHT_OF_ACTIVE_TAB ) {
+        is_open_last_pos = false;
     }
     
     for( let i = 0; i < restore_tabgroup_id_list.length; i++ ) {
         let tabgroup_id = restore_tabgroup_id_list[i];
         let tabgroup_data = gTabgroupList[tabgroup_id].data;
         
-        open_tabs( tabgroup_data, is_open_new_window, true );
+        open_tabs( tabgroup_data, is_open_new_window, is_open_last_pos );
         
         if( gConfig["is_delete_on_restore"] ) {
             delete gTabgroupList[tabgroup_id];
@@ -364,18 +375,27 @@ function restore_tab_group() {
 }
 
 async function open_tabs( tabgroup_data, is_open_new_window, is_open_last_pos ) {
-    let window_id;
-    
     if( tabgroup_data.length > 0 ) {
+        let window_id;
+        let tab_index;
+        
         if( is_open_new_window ) {
             window_id = await open_window( tabgroup_data[0].url );
             tabgroup_data = tabgroup_data.slice( 1 );   // ウィンドウを開くときに1つ目のタブは開くため、削除する
+            tab_index = 1;
         } else {
             window_id = chrome.windows.WINDOW_ID_CURRENT;
+            if( is_open_last_pos ) {
+                let opneing_tabs = await get_opening_tabs();
+                tab_index = opneing_tabs.length;
+            } else {
+                tab_index = await get_active_tab_index() + 1;
+            }
         }
         
         for( let data_index = 0; data_index < tabgroup_data.length; data_index++ ) {
-            await open_tab( tabgroup_data[data_index].url, window_id );
+            await open_tab( tabgroup_data[data_index].url, window_id, tab_index );
+            tab_index++;
         }
     }
 }
@@ -436,6 +456,8 @@ function refresh_is_empty_tabgroup_on_restore() {
 function refresh_restore_to() {
     if( gConfig["restore_to"] == RESTORE_TO_ID_CURRENT_WINDOW_LAST ) {
         document.getElementById('rb_restore_current_window_last').checked = true;
+    } else if( gConfig["restore_to"] == RESTORE_TO_ID_RIGHT_OF_ACTIVE_TAB ) {
+        document.getElementById('rb_restore_right_of_active_tab').checked = true;
     } else if( gConfig["restore_to"] == RESTORE_TO_ID_NEW_WINDOW ) {
         document.getElementById('rb_restore_new_window').checked = true;
     }
@@ -679,15 +701,24 @@ async function open_window( new_url ) {
     });
 }
 
-async function open_tab( new_url, target_window_id ) {
+async function open_tab( new_url, target_window_id, tab_index ) {
     return new Promise ( ( resolve, reject ) => {
         chrome.tabs.create({
             windowId: target_window_id,
             url: new_url,
+            index: tab_index,
             active: false
         });
         
         resolve();
+    });
+}
+
+async function get_active_tab_index() {
+    return new Promise ( ( resolve, reject ) => {
+        chrome.tabs.query( { active: true, currentWindow: true }, ( tabs ) => {
+            resolve( tabs[0].index );
+        });
     });
 }
 
