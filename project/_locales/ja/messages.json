@@ -26,5 +26,14 @@
     "edit_page_rename_tabgroup_button": { "message": "名前変更" },
     "edit_page_delete_tabgroup_button": { "message": "削除" },
     "edit_page_select_tab": { "message": "編集するタブの選択" },
-    "edit_page_delete_tab_button": { "message": "削除" }
+    "edit_page_delete_tab_button": { "message": "削除" },
+
+    "to_general_setting": { "message": "全体設定" },
+    "general_setting_title": { "message": "全体設定" },
+
+    "setting_opening_page": { "message": "最初に開く画面" },
+    "label_opening_page_save": { "message": "「保存」画面" },
+    "label_opening_page_restore": { "message": "「復元」画面" },
+    "label_opening_page_edit": { "message": "「編集」画面" },
+    "label_opening_page_last_oepned": { "message": "最後に開いていた画面" }
 }

@@ -15,6 +15,81 @@ body, table {
     user-select: none;
 }
 
+.tab_top_content {
+    display: none;
+}
+
+input[name="tab_top"] {
+    display: none;
+}
+
+#rd_content_main:checked ~ #content_main,
+#rd_content_setting:checked ~ #content_setting {
+    display: block;
+}
+
+#to_general_setting {
+    font-size: 11px;
+    color: #5ab4bd;
+    text-decoration: underline;
+    text-decoration-color: #5ab4bd;
+    display:inline-block;
+}
+
+.arrow {
+    position: relative;
+    display: inline-block;
+    padding: 24px 0 0 24px;
+    vertical-align: middle;
+    text-decoration: none;
+    transform: rotate(180deg);
+}
+
+.arrow::before,
+.arrow::after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    content: "";
+    vertical-align: middle;
+}
+
+#return_from_general_setting::before{
+    width: 24px;
+    height: 24px;
+    background: #5ab4bd;
+}
+#return_from_general_setting::after{
+    left: 6px;
+    width: 6px;
+    height: 6px;
+    border-top: 2px solid #fff;
+    border-right: 2px solid #fff;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+#general_setting_title {
+    background: #5ab4bd;
+    color: #FFF;
+    font-weight: bold;
+    font-size: 18px;
+    width: 80%;
+    height: 24px;
+    text-align:center;
+    margin: 10px auto;
+}
+
+#general_setting {
+    overflow-y: auto;
+    height: calc(100% - 46px);
+    margin-top: 10px;
+    padding: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
 /* タブ切り替え全体のスタイル */
 .tabs {
     background-color: #fff;
@@ -138,7 +213,7 @@ button:disabled {
 
 .group_1 {
     border: solid 1px #5ab4bd;
-    margin: 35px 0px;
+    margin: 10px 0px;
     padding-top: 0px;
 }
 

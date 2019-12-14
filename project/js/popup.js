@@ -9,6 +9,11 @@ const RESTORE_TO_ID_CURRENT_WINDOW_LAST = 0;
 const RESTORE_TO_ID_NEW_WINDOW = 1;
 const RESTORE_TO_ID_RIGHT_OF_ACTIVE_TAB = 2;
 
+const OPENING_PAGE_SAVE = 0;
+const OPENING_PAGE_RESTORE = 1;
+const OPENING_PAGE_EDIT = 2;
+const OPENING_PAGE_LAST_OPENDED = 3;
+
 let gConfig;
 let gTabgroupList;
 
@@ -40,7 +45,15 @@ window.onload = () => {
     document.getElementById('btn_edit_delete_tabgroup').addEventListener('click', delete_tabgroup);
     document.getElementById('btn_edit_delete_tab').addEventListener('click', delete_tab);
     
-    refresh_page();
+    document.getElementById('to_general_setting').addEventListener('click', to_general_setting);
+    document.getElementById('return_from_general_setting').addEventListener('click', return_from_general_setting);
+    
+    let opening_page_elems = document.getElementsByName('opening_page');
+    for( let i = 0; i < opening_page_elems.length; i++ ) {
+        opening_page_elems[i].addEventListener('click', change_opening_page);
+    }
+    
+    open_start_page();
     
     // 他のウィンドウでpopupが開かれたらウィンドウを閉じる
     chrome.runtime.onMessage.addListener( ( request, sender, callback ) => {
@@ -79,6 +92,15 @@ function set_popup_string() {
     set_element_string('btn_edit_rename_tabgroup', 'edit_page_rename_tabgroup_button');
     set_element_string('edit_page_select_tab', 'edit_page_select_tab');
     set_element_string('btn_edit_delete_tab', 'edit_page_delete_tab_button');
+
+    set_element_string('to_general_setting', 'to_general_setting');
+    set_element_string('general_setting_title', 'general_setting_title');
+    
+    set_element_string('setting_opening_page', 'setting_opening_page');
+    set_element_string('label_opening_page_save', 'label_opening_page_save');
+    set_element_string('label_opening_page_restore', 'label_opening_page_restore');
+    set_element_string('label_opening_page_edit', 'label_opening_page_edit');
+    set_element_string('label_opening_page_last_oepned', 'label_opening_page_last_oepned');
 }
 
 function set_element_string( element_id, message_id ) {
@@ -86,6 +108,20 @@ function set_element_string( element_id, message_id ) {
 }
 
 /* ===== Page functions ===== */
+function open_start_page() {
+    event_start();
+    
+    if( gConfig["opening_page"] == OPENING_PAGE_LAST_OPENDED ) {
+        document.getElementsByName('tab_item')[gConfig["last_opened_page"]].checked = true;
+    } else {
+        document.getElementsByName('tab_item')[gConfig["opening_page"]].checked = true;
+    }
+    
+    refresh_page();
+    
+    event_end();
+}
+
 function refresh_page() {
     event_start();
     
@@ -93,6 +129,7 @@ function refresh_page() {
     for( page_index = 0; page_index < pages.length; page_index++ ) {
         if( pages[page_index].checked ) {
             REFRESH_PAGE_FUNCTIONS[page_index]();
+            gConfig["last_opened_page"] = page_index;
             break;
         }
     }
@@ -674,6 +711,52 @@ function is_delete_tab_enable() {
     return rtn;
 }
 
+/* ===== General Setting functions ===== */
+function to_general_setting() {
+    event_start();
+    
+    document.getElementById("rd_content_setting").checked = true;
+    refresh_general_setting();
+    
+    event_end();
+}
+
+function return_from_general_setting() {
+    event_start();
+    
+    document.getElementById("rd_content_main").checked = true;
+    
+    event_end();
+}
+
+function change_opening_page() {
+    event_start();
+    
+    if( document.getElementById('rb_opening_page_save').checked ) {
+        gConfig["opening_page"] = OPENING_PAGE_SAVE;
+    } else if ( document.getElementById('rb_opening_page_restore').checked ) {
+        gConfig["opening_page"] = OPENING_PAGE_RESTORE;
+    } else if ( document.getElementById('rb_opening_page_edit').checked ) {
+        gConfig["opening_page"] = OPENING_PAGE_EDIT;
+    } else if ( document.getElementById('rb_opening_page_last_opened').checked ) {
+        gConfig["opening_page"] = OPENING_PAGE_LAST_OPENDED;
+    }
+    
+    event_end();
+}
+
+function refresh_general_setting() {
+    if( gConfig["opening_page"] == OPENING_PAGE_SAVE ) {
+        document.getElementById('rb_opening_page_save').checked = true;
+    } else if( gConfig["opening_page"] == OPENING_PAGE_RESTORE ) {
+        document.getElementById('rb_opening_page_restore').checked = true;
+    } else if( gConfig["opening_page"] == OPENING_PAGE_EDIT ) {
+        document.getElementById('rb_opening_page_edit').checked = true;
+    } else if( gConfig["opening_page"] == OPENING_PAGE_LAST_OPENDED ) {
+        document.getElementById('rb_opening_page_last_opened').checked = true;
+    }
+}
+
 /* ===== Common functions ===== */
 async function get_opening_tabs() {
     return new Promise ( ( resolve, reject ) => {
@@ -844,6 +927,12 @@ function get_config_data() {
     }
     if( !( "restore_to" in config_data ) ) {
         config_data["restore_to"] = RESTORE_TO_ID_CURRENT_WINDOW_LAST;
+    }
+    if( !( "opening_page" in config_data ) ) {
+        config_data["opening_page"] = OPENING_PAGE_SAVE;
+    }
+    if( !( "last_opened_page" in config_data ) ) {
+        config_data["last_opened_page"] = 0;
     }
     
     config_data = config_convert( config_data );
