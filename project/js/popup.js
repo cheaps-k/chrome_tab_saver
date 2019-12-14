@@ -830,6 +830,9 @@ function multi_list_selected( row, e, table_id ){
             row.getElementsByTagName("input")[0].checked = new_state;
             set_click_row( table_id, row, new_state );
         } else if( e.shiftKey && gListLastClick.list == table_id) {
+            for (i = 0; i < rows.length; i++) {
+                rows[i].getElementsByTagName("input")[0].checked = false;
+            }
             let click_row = row.getElementsByClassName("row_cell")[0].innerHTML;
             for( i = Math.min( click_row, gListLastClick.row ); i <= Math.max( click_row, gListLastClick.row ); i++ ) {
                 rows[i].getElementsByTagName("input")[0].checked = true;
