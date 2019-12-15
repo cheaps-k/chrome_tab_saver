@@ -11,13 +11,29 @@
     "save_page_save_button": { "message": "保存" },
 
     "restore_page_select_tabgroup": { "message": "復元するタブグループの選択" },
-    "restore_page_check_is_delete_tabgroup": { "message": "復元時にタブグループを削除" },
-    "restore_page_check_is_empty_tabgroup": { "message": "復元時にタブグループを空にする" },
     "restore_page_restore_button": { "message": "復元" },
+    "legend_restore_setting": { "message": "復元設定" },
+    "legend_restore_to": { "message": "復元先" },
+    "restore_page_radio_open_current_window_last": { "message": "このウィンドウの一番右" },
+    "restore_page_radio_open_right_of_active_tab": { "message": "アクティブなタブの右" },
+    "restore_page_radio_open_new_window": { "message": "新しいウィンドウ" },
+    "legend_tabgroup_handling_in_restore": { "message": "復元時のタブグループの取り扱い" },
+    "restore_page_rb_tabgroup_handling_on_restore_not_affect": { "message": "何もしない" },
+    "restore_page_rb_tabgroup_handling_on_restore_to_empty": { "message": "空にする" },
+    "restore_page_rb_tabgroup_handling_on_restore_delete": { "message": "削除する" },
 
     "edit_page_select_tabgroup": { "message": "編集するタブグループの選択" },
     "edit_page_rename_tabgroup_button": { "message": "名前変更" },
     "edit_page_delete_tabgroup_button": { "message": "削除" },
     "edit_page_select_tab": { "message": "編集するタブの選択" },
-    "edit_page_delete_tab_button": { "message": "削除" }
+    "edit_page_delete_tab_button": { "message": "削除" },
+
+    "to_general_setting": { "message": "全体設定" },
+    "general_setting_title": { "message": "全体設定" },
+
+    "setting_opening_page": { "message": "最初に開く画面" },
+    "label_opening_page_save": { "message": "「保存」画面" },
+    "label_opening_page_restore": { "message": "「復元」画面" },
+    "label_opening_page_edit": { "message": "「編集」画面" },
+    "label_opening_page_last_oepned": { "message": "最後に開いていた画面" }
 }

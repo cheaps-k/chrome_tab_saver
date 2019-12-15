@@ -6,18 +6,34 @@
     "page_name_edit": { "message": "EDIT" },
 
     "save_page_select_tab": { "message": "Select tab to save" },
-    "save_page_select_tabgroup": { "message": "Select destination tabgroup" },
+    "save_page_select_tabgroup": { "message": "Select tabgroup destination" },
     "save_page_new_tabgroup": { "message": "New tabgroup" },
     "save_page_save_button": { "message": "save" },
 
     "restore_page_select_tabgroup": { "message": "Select tabgroup to restore" },
-    "restore_page_check_is_delete_tabgroup": { "message": "Delete tabgroup on restore" },
-    "restore_page_check_is_empty_tabgroup": { "message": "Empty tabgroup on restore" },
     "restore_page_restore_button": { "message": "restore" },
+    "legend_restore_setting": { "message": "Setting of restore" },
+    "legend_restore_to": { "message": "Restoration destination" },
+    "restore_page_radio_open_current_window_last": { "message": "Most right in this window" },
+    "restore_page_radio_open_right_of_active_tab": { "message": "Right of active tab" },
+    "restore_page_radio_open_new_window": { "message": "New window" },
+    "legend_tabgroup_handling_in_restore": { "message": "Handring tabgroup on restore" },
+    "restore_page_rb_tabgroup_handling_on_restore_not_affect": { "message": "Do nothing" },
+    "restore_page_rb_tabgroup_handling_on_restore_to_empty": { "message": "To empty" },
+    "restore_page_rb_tabgroup_handling_on_restore_delete": { "message": "Delete" },
 
     "edit_page_select_tabgroup": { "message": "Select tabgroup to edit" },
     "edit_page_rename_tabgroup_button": { "message": "rename" },
     "edit_page_delete_tabgroup_button": { "message": "delete" },
     "edit_page_select_tab": { "message": "Select tab to edit" },
-    "edit_page_delete_tab_button": { "message": "delete" }
+    "edit_page_delete_tab_button": { "message": "delete" },
+
+    "to_general_setting": { "message": "General setting" },
+    "general_setting_title": { "message": "GENERAL SETTING" },
+
+    "setting_opening_page": { "message": "Startup page" },
+    "label_opening_page_save": { "message": "Page 'SAVE'" },
+    "label_opening_page_restore": { "message": "Page 'RESTORE'" },
+    "label_opening_page_edit": { "message": "Page 'EDIT'" },
+    "label_opening_page_last_oepned": { "message": "Last opened page" }
 }

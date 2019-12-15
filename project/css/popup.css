@@ -7,11 +7,88 @@
     color: #fff;
 }
 
-body {
+body, table {
     width: 300px;
-    height: 483px;
+    height: auto;
     font-family: "Meiryo UI";
+    font-size: 12px;
     user-select: none;
+}
+
+.tab_top_content {
+    display: none;
+}
+
+input[name="tab_top"] {
+    display: none;
+}
+
+#rd_content_main:checked ~ #content_main,
+#rd_content_setting:checked ~ #content_setting {
+    display: block;
+}
+
+#to_general_setting {
+    font-size: 11px;
+    color: #5ab4bd;
+    text-decoration: underline;
+    text-decoration-color: #5ab4bd;
+    display:inline-block;
+    padding-top: 2px;
+}
+
+.arrow {
+    position: relative;
+    display: inline-block;
+    padding: 24px 0 0 24px;
+    vertical-align: middle;
+    text-decoration: none;
+    transform: rotate(180deg);
+}
+
+.arrow::before,
+.arrow::after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    content: "";
+    vertical-align: middle;
+}
+
+#return_from_general_setting::before{
+    width: 24px;
+    height: 24px;
+    background: #5ab4bd;
+}
+#return_from_general_setting::after{
+    left: 6px;
+    width: 6px;
+    height: 6px;
+    border-top: 2px solid #fff;
+    border-right: 2px solid #fff;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+#general_setting_title {
+    background: #5ab4bd;
+    color: #FFF;
+    font-weight: bold;
+    font-size: 18px;
+    width: 80%;
+    height: 24px;
+    text-align:center;
+    margin: 10px auto;
+}
+
+#general_setting {
+    overflow-y: auto;
+    height: calc(100% - 46px);
+    margin-top: 10px;
+    padding: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 /* タブ切り替え全体のスタイル */
@@ -48,10 +125,10 @@ input[name="tab_item"] {
 /* タブ切り替えの中身のスタイル */
 .tab_content {
     display: none;
-    padding: 0px 15px;
+    padding: 0px 15px 5px;
     clear: both;
     overflow: hidden;
-    height: 450px;
+    height: 470px;
 }
 
 /* 選択されているタブのコンテンツのみを表示 */
@@ -92,7 +169,7 @@ h1:after {
 }
 
 hr {
-    border-top: 1.5px dashed #5ab4bd;
+    border-top: 1px dashed #5ab4bd;
     border-bottom: 0px solid #5ab4bd;
 }
 
@@ -123,14 +200,75 @@ button:disabled {
     color: #565656;
 }
 
-input[type="checkbox"] {
-    margin-top: 6px;
+.group_title_1 {
+    font-size: 16px;
+    font-weight: bold;
+    color: #5ab4bd;
+}
+
+.group_title_2 {
+    font-size: 13px;
+    font-weight: bold;
+    color: #5ab4bd;
+}
+
+.group_1 {
+    border: solid 1px #5ab4bd;
+    margin: 10px 0px;
+    padding-top: 0px;
+}
+
+.group_2 {
+    border: dashed 1px #5ab4bd;
+    margin: 5px 0px;
+}
+
+.setting {
+    margin-top: 4px;
     vertical-align: middle;
 }
 
-.label_for_checkbox {
-    margin-top: 6px;
-    vertical-align: middle;
+.list {
+    width: 100%;
+    height: 12em;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: solid 1px #B0B0B0;
+}
+
+.list_table {
+    width: 100%;
+    border-spacing: 0px 1px;
+    table-layout: fixed;
+}
+
+.list_table_col_checkbox, .list_table_col_radiobutton {
+    width: 20px;
+}
+
+.list_table_col_fav_icon {
+    width: 18px;
+}
+
+.list_table_col_row, .list_table_col_id {
+    display: none;
+}
+
+.list_table td {
+    font-size: 11.5px;
+    height: 20px;
+    white-space: nowrap;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.list_table .row_cell, .list_table .id_cell {
+    display: none;
+}
+
+.list_table .fav_icon {
+    width: 14px;
+    height: 14px;
 }
 
 #save_page_new_tabgroup {

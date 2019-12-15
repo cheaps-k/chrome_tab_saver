@@ -5,50 +5,174 @@
         <script type="text/javascript" src="js/popup.js"></script>
     </head>
     <body>
-        <div class="tabs">
-            <input id="rd_save" type="radio" name="tab_item" checked>
-            <label id="page_name_save" class="tab_item" for="rd_save"></label>
-            <input id="rd_restore" type="radio" name="tab_item">
-            <label id="page_name_restore" class="tab_item" for="rd_restore"></label>
-            <input id="rd_edit" type="radio" name="tab_item">
-            <label id="page_name_edit" class="tab_item" for="rd_edit"></label>
+        <input id="rd_content_main" type="radio" name="tab_top" checked>
+        <input id="rd_content_setting" type="radio" name="tab_top">
+        <div class="tab_top_content" id="content_main">
+            <div class="tabs">
+                <input id="rd_save" type="radio" name="tab_item" checked>
+                <label id="page_name_save" class="tab_item" for="rd_save"></label>
+                <input id="rd_restore" type="radio" name="tab_item">
+                <label id="page_name_restore" class="tab_item" for="rd_restore"></label>
+                <input id="rd_edit" type="radio" name="tab_item">
+                <label id="page_name_edit" class="tab_item" for="rd_edit"></label>
 
-            <div class="tab_content" id="save_content">
-                <h1 id="save_page_select_tab"></h1>
-                <select id="sb_save_tab_list" multiple></select>
-                <h1 id="save_page_select_tabgroup"></h1>
-                <select id="sb_save_target_tabgroup_list" size="10"></select>
-                <div style="overflow:auto;">
-                    <input type="text" spellcheck="false" id="it_save_new_tabgroup" style="float: right;">
-                    <label id="save_page_new_tabgroup" style="float: right;"></label>
+                <div class="tab_content" id="save_content">
+                    <h1 id="save_page_select_tab"></h1>
+                    <div class="list">
+                        <table class="list_table" id="tbl_save_tab_list">
+                            <thead>
+                                <tr>
+                                    <th class="list_table_col_checkbox"></th>
+                                    <th class="list_table_col_fav_icon"></th>
+                                    <th class="list_table_col_tab_title"></th>
+                                    <th class="list_table_col_row"></th>
+                                    <th class="list_table_col_id"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h1 id="save_page_select_tabgroup"></h1>
+                    <div class="list">
+                        <table class="list_table" id="tbl_save_target_tabgroup_list">
+                            <thead>
+                                <tr>
+                                    <th class="list_table_col_radiobutton"></th>
+                                    <th class="list_table_col_tab_title"></th>
+                                    <th class="list_table_col_row"></th>
+                                    <th class="list_table_col_id"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="overflow:auto;">
+                        <input type="text" spellcheck="false" id="it_save_new_tabgroup" style="float: right;">
+                        <label id="save_page_new_tabgroup" style="float: right;"></label>
+                    </div>
+                    <hr>
+                    <button type="button" id="btn_save_tabs"></button>
                 </div>
-                <hr>
-                <button type="button" id="btn_save_tabs"></button>
+
+                <div class="tab_content" id="restore_content">
+                    <h1 id="restore_page_select_tabgroup"></h1>
+                    <div class="list">
+                        <table class="list_table" id="tbl_restore_tabgroup_list">
+                            <thead>
+                                <tr>
+                                    <th class="list_table_col_checkbox"></th>
+                                    <th class="list_table_col_tab_title"></th>
+                                    <th class="list_table_col_row"></th>
+                                    <th class="list_table_col_id"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <button type="button" id="btn_restore_open_tabs"></button>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <fieldset class="group_1">
+                        <legend class="group_title_1" id="legend_restore_setting"></legend>
+                        <fieldset class="group_2">
+                            <legend class="group_title_2" id="legend_restore_to"></legend>
+                            <div>
+                                <input type="radio" class="setting" name="restore_to" id="rb_restore_current_window_last">
+                                <label id="restore_page_rb_restore_to_current_window_last" class="setting label_for_radiobutton" for="rb_restore_current_window_last"></label>
+                            </div>
+                            <div>
+                                <input type="radio" class="setting" name="restore_to" id="rb_restore_right_of_active_tab">
+                                <label id="restore_page_radio_open_right_of_active_tab" class="setting label_for_radiobutton" for="rb_restore_right_of_active_tab"></label>
+                            </div>
+                            <div>
+                                <input type="radio" class="setting" name="restore_to" id="rb_restore_new_window">
+                                <label id="restore_page_rb_restore_to_new_window" class="setting label_for_radiobutton" for="rb_restore_new_window"></label>
+                            </div>
+                        </fieldset>
+                        <fieldset class="group_2">
+                            <legend class="group_title_2" id="legend_tabgroup_handling_in_restore"></legend>
+                            <div>
+                                <input type="radio" class="setting" name="tabgroup_handling_on_restore" id="rb_not_affect_to_tabgroup_on_restore">
+                                <label id="restore_page_rb_tabgroup_handling_on_restore_not_affect" class="setting label_for_checkbox" for="rb_not_affect_to_tabgroup_on_restore"></label>
+                            </div>
+                            <div>
+                                <input type="radio" class="setting" name="tabgroup_handling_on_restore" id="rb_to_empty_tabgroup_on_restore">
+                                <label id="restore_page_rb_tabgroup_handling_on_restore_to_empty" class="setting label_for_checkbox" for="rb_to_empty_tabgroup_on_restore"></label>
+                            </div>
+                            <div>
+                                <input type="radio" class="setting" name="tabgroup_handling_on_restore" id="rb_delete_tabgroup_on_restore">
+                                <label id="restore_page_rb_tabgroup_handling_on_restore_delete" class="setting label_for_checkbox" for="rb_delete_tabgroup_on_restore"></label>
+                            </div>
+                        </fieldset>
+                    </fieldset>
+                </div>
+
+                <div class="tab_content" id="edit_content">
+                    <h1 id="edit_page_select_tabgroup"></h1>
+                    <div class="list">
+                        <table class="list_table" id="tbl_edit_tabgroup_list">
+                            <thead>
+                                <tr>
+                                    <th class="list_table_col_radiobutton"></th>
+                                    <th class="list_table_col_tab_title"></th>
+                                    <th class="list_table_col_row"></th>
+                                    <th class="list_table_col_id"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <input type="text" spellcheck="false" id="it_edit_new_name">
+                    <button type="button" id="btn_edit_delete_tabgroup"></button>
+                    <button type="button" id="btn_edit_rename_tabgroup"></button>
+                    <h1 id="edit_page_select_tab"></h1>
+                    <div class="list">
+                        <table class="list_table" id="tbl_edit_tab_list">
+                            <thead>
+                                <tr>
+                                    <th class="list_table_col_checkbox"></th>
+                                    <th class="list_table_col_fav_icon"></th>
+                                    <th class="list_table_col_tab_title"></th>
+                                    <th class="list_table_col_row"></th>
+                                    <th class="list_table_col_id"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" id="btn_edit_delete_tab"></button>
+                </div>
             </div>
-
-            <div class="tab_content" id="restore_content">
-                <h1 id="restore_page_select_tabgroup"></h1>
-                <select id="sb_restore_tabgroup_list" multiple></select>
-                <button type="button" id="btn_restore_open_tabs" style="fleat: right;"></button>
-                <div>
-                    <input type="checkbox" id="cb_restore_is_delete_tabgroup">
-                    <label id="restore_page_check_is_delete_tabgroup" class="label_for_checkbox" for="cb_restore_is_delete_tabgroup"></label>
-                </div>
-                <div>
-                    <input type="checkbox" id="cb_restore_is_empty_tabgroup">
-                    <label id="restore_page_check_is_empty_tabgroup" class="label_for_checkbox" for="cb_restore_is_empty_tabgroup"></label>
-                </div>
-            </div>
-
-            <div class="tab_content" id="edit_content">
-                <h1 id="edit_page_select_tabgroup"></h1>
-                <select id="sb_edit_tabgroup_list" size="10"></select>
-                <input type="text" spellcheck="false" id="it_edit_new_name">
-                <button type="button" id="btn_edit_delete_tabgroup"></button>
-                <button type="button" id="btn_edit_rename_tabgroup"></button>
-                <h1 id="edit_page_select_tab"></h1>
-                <select id="sb_edit_tab_list" multiple></select>
-                <button type="button" id="btn_edit_delete_tab"></button>
+            <div id="to_general_setting"></div>
+        </div>
+        <div class="tab_top_content" id="content_setting">
+            <div class="arrow" id="return_from_general_setting" style="float:left"></div><div id="general_setting_title"></div>
+            <div id="general_setting">
+                <fieldset class="group_1">
+                    <legend class="group_title_1" id="setting_opening_page"></legend>
+                    <div>
+                        <input type="radio" class="setting" name="opening_page" id="rb_opening_page_save">
+                        <label id="label_opening_page_save" class="setting label_for_radiobutton" for="rb_opening_page_save"></label>
+                    </div>
+                    <div>
+                        <input type="radio" class="setting" name="opening_page" id="rb_opening_page_restore">
+                        <label id="label_opening_page_restore" class="setting label_for_radiobutton" for="rb_opening_page_restore"></label>
+                    </div>
+                    <div>
+                        <input type="radio" class="setting" name="opening_page" id="rb_opening_page_edit">
+                        <label id="label_opening_page_edit" class="setting label_for_radiobutton" for="rb_opening_page_edit"></label>
+                    </div>
+                    <div>
+                        <input type="radio" class="setting" name="opening_page" id="rb_opening_page_last_opened">
+                        <label id="label_opening_page_last_oepned" class="setting label_for_radiobutton" for="rb_opening_page_last_opened"></label>
+                    </div>
+                </fieldset>
             </div>
         </div>
     </body>
