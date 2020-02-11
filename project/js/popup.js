@@ -52,6 +52,7 @@ window.onload = () => {
     for( let i = 0; i < opening_page_elems.length; i++ ) {
         opening_page_elems[i].addEventListener('click', change_opening_page);
     }
+    document.getElementById('setting_display_tab_num_to_tabgroup').addEventListener('click', change_display_setting);
     
     open_start_page();
     
@@ -101,6 +102,9 @@ function set_popup_string() {
     set_element_string('label_opening_page_restore', 'label_opening_page_restore');
     set_element_string('label_opening_page_edit', 'label_opening_page_edit');
     set_element_string('label_opening_page_last_oepned', 'label_opening_page_last_oepned');
+
+    set_element_string('setting_display', 'setting_display');
+    set_element_string('label_display_tab_num_to_tabgroup', 'label_display_tab_num_to_tabgroup');
 }
 
 function set_element_string( element_id, message_id ) {
@@ -200,16 +204,25 @@ async function save_tab() {
     }
     
     /* If selected all tabs, open new tab */
-    if( tabs.length == save_tab_ids.length ) {
+    let remain_tabs_num = tabs.length - save_tab_ids.length;
+    if( remain_tabs_num == 0 ) {
         await open_tab( "chrome://newtab/", chrome.windows.WINDOW_ID_CURRENT, 0 );
+        remain_tabs_num = 1;
     }
     
     /* Close tabs */
     save_all_nvdata();      // タブを閉じたときにpopupが閉じる可能性があるので、事前にデータを保存しておく
     await close_tabs( save_tab_ids );
     
-    // タブを閉じた直後に更新するとタブが残っているように見えるため、100msウェイトを入れる
-    setTimeout( () => { refresh_save_page(); }, 100 );
+    // タブを閉じた直後に更新するとタブが残っているように見えるため、タブが閉じきるまでウェイト
+    let after_close_tabs;
+    for( let limit = 0; limit < 10000; limit++ ){    // 念のため上限を付ける
+        after_close_tabs = await get_opening_tabs();
+        if( after_close_tabs.length == remain_tabs_num ){
+            break;
+        }
+    }
+    refresh_save_page();
     
     event_end();
 }
@@ -232,16 +245,18 @@ async function refresh_save_tab_list() {
 
     table_body.innerHTML = "";
     for( let index = 0; index < tabs.length; index++ ) {
+        let escaped_title = escape_string( tabs[index].title );
+        
         if( tabs[index].favIconUrl ) {
             row_data[1].value = `<img src="${tabs[index].favIconUrl}" class="fav_icon">`;
         } else {
             row_data[1].value = "";
         }
-        row_data[2].value = tabs[index].title;
+        row_data[2].value = escaped_title;
         row_data[3].value = String( index );
         row_data[4].value = tabs[index].id;
         
-        table_body.innerHTML += make_table_row( tabs[index].title, row_data );
+        table_body.innerHTML += make_table_row( escaped_title, row_data );
     }
     register_event_to_save_tab_list();
     
@@ -269,17 +284,21 @@ function select_save_tab_list(e) {
 function refresh_save_target_tabgroup_list() {
     let table_id = "tbl_save_target_tabgroup_list";
     
-    let table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
-    let row_data = [{ class: 'radiobutton_cell', value: '<input type="radio" name="rd_save_target_tabgroup">'}, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
+    let table = document.getElementById(table_id);
+    let table_body = table.getElementsByTagName("tbody")[0];
+    let row_data = [{ class: 'radiobutton_cell', value: '<input type="radio" name="rd_save_target_tabgroup">'}, { class: 'title_cell', value: ''}, { class: 'num_cell', value: '' }, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
 
     table_body.innerHTML = "";
     let counter = 0;
     for( id in gTabgroupList ) {
-        row_data[1].value = gTabgroupList[id].name;
-        row_data[2].value = String( counter );
-        row_data[3].value = id;
+        let escaped_title = escape_string( gTabgroupList[id].name );
         
-        table_body.innerHTML += make_table_row( gTabgroupList[id].name, row_data );
+        row_data[1].value = escaped_title;
+        row_data[2].value = gTabgroupList[id].data.length;
+        row_data[3].value = String( counter );
+        row_data[4].value = id;
+        
+        table_body.innerHTML += make_table_row( escaped_title, row_data );
         
         counter++;
     }
@@ -288,6 +307,8 @@ function refresh_save_target_tabgroup_list() {
     if( gListLastClick.list == table_id ) {
         gListLastClick.list = "";
     }
+    
+    reflesh_tab_num_of_tab_group( table );
 }
 
 function register_event_to_save_target_tabgroup_list() {
@@ -441,17 +462,21 @@ async function open_tabs( tabgroup_data, is_open_new_window, is_open_last_pos ) 
 function refresh_restore_tabgroup_list() {
     let table_id = "tbl_restore_tabgroup_list";
     
-    let table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
-    let row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
+    let table = document.getElementById(table_id);
+    let table_body = table.getElementsByTagName("tbody")[0];
+    let row_data = [{ class: 'checkbox_cell', value: '<input type="checkbox">'}, { class: 'title_cell', value: ''}, { class: 'num_cell', value: '' }, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
 
     table_body.innerHTML = "";
     let counter = 0;
     for( id in gTabgroupList ) {
-        row_data[1].value = gTabgroupList[id].name;
-        row_data[2].value = String( counter );
-        row_data[3].value = id;
+        let escaped_title = escape_string( gTabgroupList[id].name );
         
-        table_body.innerHTML += make_table_row( gTabgroupList[id].name, row_data );
+        row_data[1].value = escaped_title;
+        row_data[2].value = gTabgroupList[id].data.length;
+        row_data[3].value = String( counter );
+        row_data[4].value = id;
+        
+        table_body.innerHTML += make_table_row( escaped_title, row_data );
         
         counter++;
     }
@@ -460,6 +485,8 @@ function refresh_restore_tabgroup_list() {
     if( gListLastClick.list == table_id ) {
         gListLastClick.list = "";
     }
+
+    reflesh_tab_num_of_tab_group( table );
 }
 
 function register_event_to_restore_tabgroup_list() {
@@ -545,7 +572,9 @@ function delete_tabgroup() {
 function delete_tab() {
     event_start();
     
-    let delete_tabgroup_id = get_select_value_from_list(document.getElementById("tbl_edit_tabgroup_list"), "id_cell")[0];
+    let tabgroup_list_table = document.getElementById("tbl_edit_tabgroup_list");
+    let delete_tabgroup_id = get_select_value_from_list(tabgroup_list_table, "id_cell")[0];
+    let tab_num = get_select_value_from_list(tabgroup_list_table, "num_cell")[0];
     let tab_index;
     
     let rows = document.getElementById("tbl_edit_tab_list").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
@@ -553,9 +582,11 @@ function delete_tab() {
         if( rows[i].getElementsByTagName("input")[0].checked ) {
             tab_index = Number( rows[i].getElementsByClassName("id_cell")[0].innerHTML );
             delete gTabgroupList[delete_tabgroup_id].data.splice(i, 1);
+            tab_num--;
         }
     }
     
+    change_value_to_select_list(tabgroup_list_table, "num_cell", tab_num);
     refresh_edit_tab_list();
     
     event_end();
@@ -565,17 +596,21 @@ async function refresh_edit_tabgroup_list() {
     let table_id = "tbl_edit_tabgroup_list";
     
     let tabs = await get_opening_tabs();
-    let table_body = document.getElementById(table_id).getElementsByTagName("tbody")[0];
-    let row_data = [{ class: 'radiobutton_cell', value: '<input type="radio" name="rd_save_target_tabgroup">'}, { class: 'title_cell', value: ''}, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
+    let table = document.getElementById(table_id);
+    let table_body = table.getElementsByTagName("tbody")[0];
+    let row_data = [{ class: 'radiobutton_cell', value: '<input type="radio" name="rd_save_target_tabgroup">'}, { class: 'title_cell', value: ''}, { class: 'num_cell', value: '' }, { class: 'row_cell', value: '' }, { class: 'id_cell', value: ''}];
 
     table_body.innerHTML = "";
     let counter = 0;
     for( id in gTabgroupList ) {
-        row_data[1].value = gTabgroupList[id].name;
-        row_data[2].value = String( counter );
-        row_data[3].value = id;
+        let escaped_title = escape_string( gTabgroupList[id].name );
         
-        table_body.innerHTML += make_table_row( gTabgroupList[id].name, row_data );
+        row_data[1].value = escaped_title;
+        row_data[2].value = gTabgroupList[id].data.length;
+        row_data[3].value = String( counter );
+        row_data[4].value = id;
+        
+        table_body.innerHTML += make_table_row( escaped_title, row_data );
         
         counter++;
     }
@@ -584,6 +619,8 @@ async function refresh_edit_tabgroup_list() {
     if( gListLastClick.list == table_id ) {
         gListLastClick.list = "";
     }
+
+    reflesh_tab_num_of_tab_group( table );
 }
 
 function register_event_to_edit_tabgroup_list() {
@@ -627,16 +664,18 @@ function refresh_edit_tab_list() {
     if( select_tabgroup_id != "" ) {
         let tab_data = gTabgroupList[select_tabgroup_id].data;
         for( let tab_index = 0; tab_index < tab_data.length; tab_index++ ) {
+            let escaped_title = escape_string( tab_data[tab_index].name );
+            
             if( tab_data[tab_index].fav_icon ) {
                 row_data[1].value = `<img src="${tab_data[tab_index].fav_icon}" class="fav_icon">`;
             } else {
                 row_data[1].value = "";
             }
-            row_data[2].value = tab_data[tab_index].name;
+            row_data[2].value = escaped_title;
             row_data[3].value = String( tab_index );
             row_data[4].value = tab_index;
             
-            table_body.innerHTML += make_table_row( tab_data[tab_index].name, row_data );
+            table_body.innerHTML += make_table_row( escaped_title, row_data );
         }
     }
     register_event_to_edit_tab_list();
@@ -725,6 +764,7 @@ function return_from_general_setting() {
     event_start();
     
     document.getElementById("rd_content_main").checked = true;
+    refresh_page();
     
     event_end();
 }
@@ -745,6 +785,14 @@ function change_opening_page() {
     event_end();
 }
 
+function change_display_setting() {
+    event_start();
+    
+    gConfig["display_tab_num_to_tabgroup"] = document.getElementById('setting_display_tab_num_to_tabgroup').checked;
+    
+    event_end();
+}
+
 function refresh_general_setting() {
     if( gConfig["opening_page"] == OPENING_PAGE_SAVE ) {
         document.getElementById('rb_opening_page_save').checked = true;
@@ -755,6 +803,8 @@ function refresh_general_setting() {
     } else if( gConfig["opening_page"] == OPENING_PAGE_LAST_OPENDED ) {
         document.getElementById('rb_opening_page_last_opened').checked = true;
     }
+    
+    document.getElementById('setting_display_tab_num_to_tabgroup').checked = gConfig["display_tab_num_to_tabgroup"];
 }
 
 /* ===== Common functions ===== */
@@ -880,6 +930,17 @@ function get_select_value_from_list( table, item_name ) {
     return select_values;
 }
 
+function change_value_to_select_list( table, item_name, value ) {
+    let rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    for( i = 0; i < rows.length; i++ ) {
+        if( rows[i].getElementsByTagName("input")[0].checked ) {
+            rows[i].getElementsByClassName(item_name)[0].innerHTML = value;
+        }
+    }
+    
+    return;
+}
+
 function is_selected_list( table ) {
     let is_selected = false;
     let rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
@@ -902,6 +963,32 @@ function reflesh_list_color( rows ) {
             row.style.backgroundColor = "#FFFFFF";
         }
     }
+}
+
+function reflesh_tab_num_of_tab_group( table ) {
+    let display_style = "none";
+    if( gConfig["display_tab_num_to_tabgroup"] == true ){
+        display_style = "";
+    }
+
+    table.getElementsByClassName("list_table_col_tab_num")[0].style.display = display_style;
+
+    let tab_num_cells = table.getElementsByTagName("tbody")[0].getElementsByClassName("num_cell");
+    for( let index = 0; index < tab_num_cells.length; index++ ) {
+        tab_num_cells[index].style.display = display_style;
+    }
+}
+
+function escape_string( original_str ) {
+    let escaped_str = original_str;
+    escaped_str = escaped_str.replace(/&/g, '&amp;');
+    escaped_str = escaped_str.replace(/</g, '&lt;');
+    escaped_str = escaped_str.replace(/>/g, '&gt;');
+    escaped_str = escaped_str.replace(/"/g, '&quot;');
+    escaped_str = escaped_str.replace(/ /g, '&nbsp;');
+    escaped_str = escaped_str.replace(/\r?\n/g, '');
+    
+    return escaped_str;
 }
 
 function event_start() {
@@ -933,6 +1020,9 @@ function get_config_data() {
     }
     if( !( "opening_page" in config_data ) ) {
         config_data["opening_page"] = OPENING_PAGE_SAVE;
+    }
+    if( !( "display_tab_num_to_tabgroup" in config_data ) ) {
+        config_data["display_tab_num_to_tabgroup"] = true;
     }
     if( !( "last_opened_page" in config_data ) ) {
         config_data["last_opened_page"] = 0;
