@@ -35,5 +35,8 @@
     "label_opening_page_save": { "message": "Page 'SAVE'" },
     "label_opening_page_restore": { "message": "Page 'RESTORE'" },
     "label_opening_page_edit": { "message": "Page 'EDIT'" },
-    "label_opening_page_last_oepned": { "message": "Last opened page" }
+    "label_opening_page_last_oepned": { "message": "Last opened page" },
+
+    "setting_display": { "message": "Display setting" },
+    "label_display_tab_num_to_tabgroup": { "message": "Displays the number of tabs stored in the tabgroup" }
 }

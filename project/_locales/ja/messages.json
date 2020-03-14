@@ -35,5 +35,8 @@
     "label_opening_page_save": { "message": "「保存」画面" },
     "label_opening_page_restore": { "message": "「復元」画面" },
     "label_opening_page_edit": { "message": "「編集」画面" },
-    "label_opening_page_last_oepned": { "message": "最後に開いていた画面" }
+    "label_opening_page_last_oepned": { "message": "最後に開いていた画面" },
+
+    "setting_display": { "message": "表示設定" },
+    "label_display_tab_num_to_tabgroup": { "message": "タブグループに保存されているタブ数を表示" }
 }
