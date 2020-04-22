@@ -2,6 +2,9 @@
 ## 概要
 開いているタブをグルーピングして保存するChrome拡張機能です。
 
+## インストール
+https://chrome.google.com/webstore/detail/tab-shelf/kjfciegmjpnkfackjbdpoioamkdhhplf
+
 ## 機能
 ### タブ保存
 開いているタブを選択し、保存することができます。
