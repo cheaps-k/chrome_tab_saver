@@ -870,7 +870,7 @@ function multi_list_selected( row, e, table_id ){
     let rows = document.getElementById(table_id).getElementsByTagName("tbody")[0].getElementsByTagName("tr");
     if( e.target.type == "checkbox" ) {
         set_click_row( table_id, row, row.getElementsByTagName("input")[0].checked );
-    } else if( e.toElement.className == "checkbox_cell" ) {
+    } else if( e.target.className == "checkbox_cell" ) {
         let new_state = !row.getElementsByTagName("input")[0].checked;
         row.getElementsByTagName("input")[0].checked = new_state;
         set_click_row( table_id, row, new_state );

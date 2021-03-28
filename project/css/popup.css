@@ -8,7 +8,7 @@
 }
 
 body, table {
-    width: 300px;
+    width: 330px;
     height: auto;
     font-family: "Meiryo UI";
     font-size: 12px;
@@ -128,7 +128,7 @@ input[name="tab_item"] {
     padding: 0px 15px 5px;
     clear: both;
     overflow: hidden;
-    height: 470px;
+    height: 530px;
 }
 
 /* 選択されているタブのコンテンツのみを表示 */
@@ -153,7 +153,7 @@ h1 {
     font-size: 15px;
     color: #fff;
     position: relative;
-    padding: 0.6em;
+    padding: 0.45em;
     background: #5ab4bd;
 }
 
@@ -235,7 +235,7 @@ input[type="text"] {
 
 .list {
     width: 100%;
-    height: 12em;
+    height: 15em;
     overflow-y: auto;
     overflow-x: hidden;
     border: solid 1px #B0B0B0;
